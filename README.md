@@ -1,24 +1,14 @@
-A small crate to get metadata from a torrent name for media, such as:
+#Torrent Name Parser
 
-* audio
-* codec
-* container
-* episode
-* episodeName
-* excess
-* extended
-* garbage
-* group
-* hardcoded
-* language
-* proper
-* quality
-* region
-* repack
-* resolution
-* season
-* title
-* website
-* widescreen
-* year
+This is a small crate to parse metadata from a torrent's name.
 
+Including but not limited to:
+
+* Title
+* Year
+* Season
+* Episode
+* Codec
+* Audio
+* Resolution
+* Quality
