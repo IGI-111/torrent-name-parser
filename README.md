@@ -1,4 +1,4 @@
-#Torrent Name Parser
+# Torrent Name Parser
 
 This is a small crate to parse metadata from a torrent's name.
 
