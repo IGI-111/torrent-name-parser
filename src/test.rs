@@ -2,34 +2,56 @@ use super::*;
 
 #[test]
 fn names() {
+    let m = Metadata::from(
+        "[TorrentCounter.to].Pacific.Rim.2.Uprising.2018.1080p.HC.HDRip.x264.[2GB].mp4",
+    );
+    assert_eq!(m.season(), None);
+    assert_eq!(m.episode(), None);
+    assert_eq!(m.year(), Some(2018));
+    assert_eq!(m.title(), "Pacific Rim 2 Uprising");
+    assert_eq!(m.resolution(), Some("1080p"));
+    assert_eq!(m.quality(), Some("HDRip"));
+
+    let m = Metadata::from("Blade.Runner.2049.2017.HDRip");
+    assert_eq!(m.season(), None);
+    assert_eq!(m.episode(), None);
+    assert_eq!(m.year(), Some(2017));
+    assert_eq!(m.title(), "Blade Runner 2049");
+    assert_eq!(m.quality(), Some("HDRip"));
+
     let m = Metadata::from("Euphoria.US.S01E03.Made.You.Look.1080p.AMZN.WEB-DL.DDP5.1.H.264-KiNGS");
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(3));
     assert_eq!(m.year(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "Euphoria");
 
     let m = Metadata::from("narcos.s01e10.1080p.bluray.x264-rovers");
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(10));
     assert_eq!(m.year(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "narcos");
 
     let m = Metadata::from("Rome.S01E11.The.Spoils.BluRay.10Bit.1080p.Dts.H265-d3g");
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(11));
     assert_eq!(m.year(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "Rome");
 
     let m = Metadata::from("the.expanse.s01e09e10.1080p.bluray.x264-rovers");
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(9));
     assert_eq!(m.year(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "the expanse");
 
     let m = Metadata::from("Attack on Titan (Shingeki no Kyojin) Season 2 [1080p x265 10bit BD Dual Audio AAC]/Episode 30 - Historia");
     assert_eq!(m.season(), Some(2));
     assert_eq!(m.episode(), Some(30));
     assert_eq!(m.year(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "Attack on Titan");
 
     let m = Metadata::from("The Walking Dead S05E03 720p HDTV x264-ASAP[ettv]");
