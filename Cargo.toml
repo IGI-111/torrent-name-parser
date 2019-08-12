@@ -2,7 +2,7 @@
 name = "torrent-name-parser"
 description = "Torrent name metadata parser"
 license = "MIT"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["IGI-111 <igi-111@protonmail.com>"]
 edition = "2018"
 repository = "https://github.com/IGI-111/torrent-name-parser"
