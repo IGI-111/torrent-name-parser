@@ -27,16 +27,17 @@ impl Metadata {
         let mut title_end = name.len();
         for p in all_patterns() {
             if p.before_title() {
-                p.regex().captures(name).map(|caps| {
+                p.captures(name).map(|caps| {
                     caps.get(0).map(|m| title_start = max(title_start, m.end()));
                 });
             } else {
-                p.regex().captures(name).map(|caps| {
+                p.captures(name).map(|caps| {
                     caps.get(0).map(|m| title_end = min(title_end, m.start()));
                 });
             }
         }
 
+        println!("{:?}", title_end);
         let mut title = name[title_start..title_end - 1].to_string();
         if let Some(pos) = title.find('(') {
             title = title.split_at(pos).0.to_string();
@@ -52,81 +53,52 @@ impl Metadata {
             .trim()
             .to_string();
 
-        let season = pattern("season")
-            .unwrap()
-            .regex()
-            .captures(name)
-            .and_then(|caps| {
-                caps.name("short")
-                    .or(caps.name("long"))
-                    .map(|m| m.as_str())
-                    .map(|s| s.parse().unwrap())
-            });
-        let episode = pattern("episode")
-            .unwrap()
-            .regex()
-            .captures(name)
-            .and_then(|caps| {
-                caps.name("short")
-                    .or(caps.name("long"))
-                    .or(caps.name("cross"))
-                    .map(|m| m.as_str())
-                    .map(|s| s.parse().unwrap())
-            });
-        let year = pattern("year")
-            .unwrap()
-            .regex()
-            .captures(name)
-            .and_then(|caps| {
-                caps.name("year")
-                    .map(|m| m.as_str())
-                    .map(|s| s.parse().unwrap())
-            });
+        let season = pattern("season").unwrap().captures(name).and_then(|caps| {
+            caps.name("short")
+                .or(caps.name("long"))
+                .map(|m| m.as_str())
+                .map(|s| s.parse().unwrap())
+        });
+        let episode = pattern("episode").unwrap().captures(name).and_then(|caps| {
+            caps.name("short")
+                .or(caps.name("long"))
+                .or(caps.name("cross"))
+                .map(|m| m.as_str())
+                .map(|s| s.parse().unwrap())
+        });
+        let year = pattern("year").unwrap().captures(name).and_then(|caps| {
+            caps.name("year")
+                .map(|m| m.as_str())
+                .map(|s| s.parse().unwrap())
+        });
         let resolution = pattern("resolution")
             .unwrap()
-            .regex()
             .captures(name)
             .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()));
         let quality = pattern("quality")
             .unwrap()
-            .regex()
             .captures(name)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
         let codec = pattern("codec")
             .unwrap()
-            .regex()
             .captures(name)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
         let audio = pattern("audio")
             .unwrap()
-            .regex()
             .captures(name)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
         let group = pattern("group")
             .unwrap()
-            .regex()
             .captures(name)
             .and_then(|caps| caps.get(2).map(|m| m.as_str().to_string()));
 
-        let extended = pattern("extended")
-            .unwrap()
-            .regex()
-            .captures(name)
-            .is_some();
-        let hardcoded = pattern("hardcoded")
-            .unwrap()
-            .regex()
-            .captures(name)
-            .is_some();
-        let proper = pattern("proper").unwrap().regex().captures(name).is_some();
-        let repack = pattern("repack").unwrap().regex().captures(name).is_some();
-        let widescreen = pattern("widescreen")
-            .unwrap()
-            .regex()
-            .captures(name)
-            .is_some();
-        let unrated = pattern("unrated").unwrap().regex().captures(name).is_some();
-        let three_d = pattern("three_d").unwrap().regex().captures(name).is_some();
+        let extended = pattern("extended").unwrap().captures(name).is_some();
+        let hardcoded = pattern("hardcoded").unwrap().captures(name).is_some();
+        let proper = pattern("proper").unwrap().captures(name).is_some();
+        let repack = pattern("repack").unwrap().captures(name).is_some();
+        let widescreen = pattern("widescreen").unwrap().captures(name).is_some();
+        let unrated = pattern("unrated").unwrap().captures(name).is_some();
+        let three_d = pattern("three_d").unwrap().captures(name).is_some();
 
         Metadata {
             title,

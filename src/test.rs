@@ -2,9 +2,11 @@ use super::*;
 
 #[test]
 fn names() {
-    let m = Metadata::from(
-        "[TorrentCounter.to].Pacific.Rim.2.Uprising.2018.1080p.HC.HDRip.x264.[2GB].mp4",
-    );
+    let m = Metadata::from("2012.2009.1080p.BluRay.x264.DTS-METiS");
+    assert_eq!(m.year(), Some(2009));
+    assert_eq!(m.title(), "2012");
+    let m =
+        Metadata::from("[TorrentCounter.to].Pacific.Rim.2.Uprising.2018.1080p.HC.HDRip.x264.[2GB]");
     assert_eq!(m.season(), None);
     assert_eq!(m.episode(), None);
     assert_eq!(m.year(), Some(2018));
