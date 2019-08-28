@@ -37,7 +37,6 @@ impl Metadata {
             }
         }
 
-        println!("{:?}", title_end);
         let mut title = name[title_start..title_end - 1].to_string();
         if let Some(pos) = title.find('(') {
             title = title.split_at(pos).0.to_string();
