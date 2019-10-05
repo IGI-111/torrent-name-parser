@@ -1,3 +1,4 @@
+use crate::error::ErrorMatch;
 use crate::pattern::{all_patterns, pattern};
 use std::cmp::{max, min};
 
@@ -22,19 +23,27 @@ pub struct Metadata {
 }
 
 impl Metadata {
-    pub fn from(name: &str) -> Self {
+    pub fn from(name: &str) -> Result<Self, ErrorMatch> {
         let mut title_start = 0;
         let mut title_end = name.len();
-        for p in all_patterns() {
-            if p.before_title() {
-                p.captures(name).map(|caps| {
-                    caps.get(0).map(|m| title_start = max(title_start, m.end()));
-                });
-            } else {
-                p.captures(name).map(|caps| {
-                    caps.get(0).map(|m| title_end = min(title_end, m.start()));
-                });
-            }
+
+        let mut captures = Vec::new();
+        for (n, p) in all_patterns() {
+            let cap = p.captures(name).map(|caps| caps.get(0));
+            captures.push((n, cap));
+            cap.map(|m| {
+                m.map(|n| {
+                    if p.before_title() {
+                        title_start = max(title_start, n.end());
+                    } else {
+                        title_end = min(title_end, n.start());
+                    }
+                })
+            });
+        }
+
+        if title_start > title_end {
+            return Err(ErrorMatch::new(captures));
         }
 
         let mut title = name[title_start..title_end - 1].to_string();
@@ -99,7 +108,7 @@ impl Metadata {
         let unrated = pattern("unrated").unwrap().captures(name).is_some();
         let three_d = pattern("three_d").unwrap().captures(name).is_some();
 
-        Metadata {
+        Ok(Metadata {
             title,
             season,
             episode,
@@ -116,7 +125,7 @@ impl Metadata {
             widescreen,
             unrated,
             three_d,
-        }
+        })
     }
 
     pub fn title(&self) -> &str {

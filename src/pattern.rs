@@ -29,8 +29,8 @@ impl Pattern {
     }
 }
 
-pub fn all_patterns() -> impl Iterator<Item = &'static Pattern> {
-    PATTERNS.values()
+pub fn all_patterns() -> impl Iterator<Item = (&'static &'static str, &'static Pattern)> {
+    PATTERNS.iter()
 }
 
 pub fn pattern(name: &str) -> Option<&Pattern> {
@@ -91,7 +91,7 @@ lazy_static! {
         m.insert(
             "group",
             Pattern::new(
-                Regex::new(r"(- ?([^-]+(?:-=\{[^-]+-?$)?))$").unwrap(),
+                Regex::new(r"(- ?([^ -]+(?:-=\{[^ -]+-?$)?))$").unwrap(),
                 false,
                 false,
             ),
