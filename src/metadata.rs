@@ -42,7 +42,7 @@ impl Metadata {
             });
         }
 
-        if title_start > title_end {
+        if title_start >= title_end {
             return Err(ErrorMatch::new(captures));
         }
 
