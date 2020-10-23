@@ -2,7 +2,7 @@ use crate::error::ErrorMatch;
 use crate::pattern::{all_patterns, pattern};
 use std::cmp::{max, min};
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Metadata {
     title: String,
     season: Option<i32>,
@@ -42,7 +42,7 @@ impl Metadata {
             });
         }
 
-        if title_start > title_end {
+        if title_start >= title_end {
             return Err(ErrorMatch::new(captures));
         }
 
