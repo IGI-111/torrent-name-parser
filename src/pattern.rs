@@ -65,7 +65,10 @@ const ALL_RAW_PATTERNS: [(&'static str, &'static str); 18] = [
         "quality",
         r"(?:PPV\.)?[HP]DTV|(?:HD)?CAM|B[rR]Rip|TS|(?:PPV )?WEB-?DL(?: DVDRip)?|H[dD]Rip|DVDRip|DVDRiP|DVDRIP|CamRip|W[EB]B[rR]ip|[Bb]lu[Rr]ay|DvDScr|hdtv",
     ),
-    ("codec", r"[Xx][Vv][Ii][Dd]|[Xx]264|[hH]\.?264/|[Xx]265|[Hh]\.?265|[Hh][Ee][Vv][Cc]?"),
+    (
+        "codec",
+        r"[Xx][Vv][Ii][Dd]|[Xx]264|[hH]\.?264/?|[Xx]265|[Hh]\.?265|[Hh][Ee][Vv][Cc]?",
+    ),
     (
         "audio",
         r"MP3|DD5\.?1|Dual[\- ]Audio|LiNE|DTS|AAC(?:\.?2\.0)?|AC3(?:\.5\.1)?",
