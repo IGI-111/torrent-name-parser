@@ -2,7 +2,7 @@
 extern crate lazy_static;
 extern crate regex;
 
-mod error;
+pub mod error;
 mod metadata;
 mod pattern;
 #[cfg(test)]
