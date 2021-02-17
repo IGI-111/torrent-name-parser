@@ -271,4 +271,12 @@ fn names() {
     assert_eq!(m.year(), None);
     assert_eq!(m.title(), "The Simpsons");
     assert!(m.proper());
+
+    let m = Metadata::from("To.All.The.Boys.Always.And.Forever.2021.1080p.NF.WEB-DL.x265.10bit.HDR.DDP5.1.Atmos-NWD.mkv").unwrap();
+    assert_eq!(m.season(), None);
+    assert_eq!(m.episode(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
+    assert_eq!(m.quality(), Some("WEB-DL"));
+    assert_eq!(m.title(), "To All The Boys Always And Forever");
+    assert_eq!(m.year(), Some(2021));
 }

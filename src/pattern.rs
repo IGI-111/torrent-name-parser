@@ -51,7 +51,7 @@ pub fn pattern(name: &str) -> Option<&Pattern> {
     PATTERNS.get(name)
 }
 
-const ALL_RAW_PATTERNS: [(&'static str, &'static str); 18] = [
+const ALL_RAW_PATTERNS: [(&str, &str); 18] = [
     (
         "season",
         r"[Ss]?(?P<short>\d+)[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)",
@@ -92,13 +92,13 @@ lazy_static! {
         let mut bucket = HashMap::new();
 
         for (name, pattern) in &ALL_RAW_PATTERNS {
-            regex!(bucket, name.clone(), pattern);
+            regex!(bucket, *name, pattern);
         }
 
         regex!(
             bucket,
             "year",
-            r"([\[\(]?(?P<year>(?:19\d|20[01])\d)[\]\)]?)",
+            r"([\[\(]?(?P<year>(?:1[89]|20)\d\d)[\]\)]?)",
             false,
             true
         );

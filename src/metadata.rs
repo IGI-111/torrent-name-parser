@@ -63,14 +63,14 @@ impl Metadata {
 
         let season = pattern("season").unwrap().captures(name).and_then(|caps| {
             caps.name("short")
-                .or(caps.name("long"))
+                .or_else(|| caps.name("long"))
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
         let episode = pattern("episode").unwrap().captures(name).and_then(|caps| {
             caps.name("short")
-                .or(caps.name("long"))
-                .or(caps.name("cross"))
+                .or_else(|| caps.name("long"))
+                .or_else(|| caps.name("cross"))
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
@@ -141,19 +141,19 @@ impl Metadata {
         self.year
     }
     pub fn resolution(&self) -> Option<&str> {
-        self.resolution.as_ref().map(String::as_str)
+        self.resolution.as_deref()
     }
     pub fn quality(&self) -> Option<&str> {
-        self.quality.as_ref().map(String::as_str)
+        self.quality.as_deref()
     }
     pub fn codec(&self) -> Option<&str> {
-        self.codec.as_ref().map(String::as_str)
+        self.codec.as_deref()
     }
     pub fn audio(&self) -> Option<&str> {
-        self.audio.as_ref().map(String::as_str)
+        self.audio.as_deref()
     }
     pub fn group(&self) -> Option<&str> {
-        self.group.as_ref().map(String::as_str)
+        self.group.as_deref()
     }
     pub fn extended(&self) -> bool {
         self.extended
