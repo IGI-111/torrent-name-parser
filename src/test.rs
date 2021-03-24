@@ -279,4 +279,17 @@ fn names() {
     assert_eq!(m.quality(), Some("WEB-DL"));
     assert_eq!(m.title(), "To All The Boys Always And Forever");
     assert_eq!(m.year(), Some(2021));
+
+    let m =
+        Metadata::from("The EXPANSE - S03 E01 - Fight or Flight (1080p - AMZN Web-DL)").unwrap();
+    assert_eq!(m.season(), Some(3));
+    assert_eq!(m.episode(), Some(1));
+    assert_eq!(m.title(), "The EXPANSE");
+    assert_eq!(m.resolution(), Some("1080p"));
+
+    let m = Metadata::from("[Judas] Re Zero 2020 - S01E01.mkv").unwrap();
+    assert_eq!(m.season(), Some(1));
+    assert_eq!(m.episode(), Some(1));
+    assert_eq!(m.title(), "Re Zero");
+    assert_eq!(m.year(), Some(2020));
 }

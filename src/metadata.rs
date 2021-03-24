@@ -51,6 +51,7 @@ impl Metadata {
             title = title.split_at(pos).0.to_string();
         }
         title = title.trim_start_matches(" -").to_string();
+        title = title.trim_end_matches(" -").to_string();
         if !title.contains(' ') && title.contains('.') {
             title = title.replace(".", " ")
         }

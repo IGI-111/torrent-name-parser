@@ -54,7 +54,7 @@ pub fn pattern(name: &str) -> Option<&Pattern> {
 const ALL_RAW_PATTERNS: [(&str, &str); 18] = [
     (
         "season",
-        r"[Ss]?(?P<short>\d+)[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)",
+        r"[Ss]?(?P<short>\d+) ?[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)",
     ),
     (
         "episode",
