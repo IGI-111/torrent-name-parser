@@ -272,7 +272,10 @@ fn names() {
     assert_eq!(m.title(), "The Simpsons");
     assert!(m.proper());
 
-    let m = Metadata::from("To.All.The.Boys.Always.And.Forever.2021.1080p.NF.WEB-DL.x265.10bit.HDR.DDP5.1.Atmos-NWD.mkv").unwrap();
+    let m = Metadata::from(
+        "To.All.The.Boys.Always.And.Forever.2021.1080p.NF.WEB-DL.x265.10bit.HDR.DDP5.1.Atmos-NWD",
+    )
+    .unwrap();
     assert_eq!(m.season(), None);
     assert_eq!(m.episode(), None);
     assert_eq!(m.resolution(), Some("1080p"));
@@ -287,9 +290,15 @@ fn names() {
     assert_eq!(m.title(), "The EXPANSE");
     assert_eq!(m.resolution(), Some("1080p"));
 
-    let m = Metadata::from("[Judas] Re Zero 2020 - S01E01.mkv").unwrap();
+    let m = Metadata::from("[Judas] Re Zero 2020 - S01E01").unwrap();
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(1));
     assert_eq!(m.title(), "Re Zero");
     assert_eq!(m.year(), Some(2020));
+
+    let m = Metadata::from("Fargo.S04E03.WEB.x264-PHOENiX[TGx]").unwrap();
+    assert_eq!(m.season(), Some(4));
+    assert_eq!(m.episode(), Some(3));
+    assert_eq!(m.title(), "Fargo");
+    assert_eq!(m.quality(), Some("WEB"));
 }
