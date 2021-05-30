@@ -301,4 +301,19 @@ fn names() {
     assert_eq!(m.episode(), Some(3));
     assert_eq!(m.title(), "Fargo");
     assert_eq!(m.quality(), Some("WEB"));
+
+
+    let m = Metadata::from("[SubsPlease] Dr. Stone S2 - 07 (1080p) [33538C7C]").unwrap();
+    dbg!(&m);
+    assert_eq!(m.season(), Some(2));
+    assert_eq!(m.episode(), Some(7));
+    assert_eq!(m.title(), "Dr. Stone");
+    assert_eq!(m.resolution(), Some("1080p"));
+
+    let m = Metadata::from("[SubsPlease] Fumetsu no Anata e S2 - 01 (1080p) [1D65E30D]").unwrap();
+    assert_eq!(m.season(), Some(2));
+    assert_eq!(m.episode(), Some(1));
+    assert_eq!(m.title(), "Fumetsu no Anata e");
+    assert_eq!(m.resolution(), Some("1080p"));
+
 }

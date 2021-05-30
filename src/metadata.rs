@@ -65,6 +65,7 @@ impl Metadata {
         let season = pattern("season").unwrap().captures(name).and_then(|caps| {
             caps.name("short")
                 .or_else(|| caps.name("long"))
+                .or_else(|| caps.name("dash"))
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
@@ -72,6 +73,7 @@ impl Metadata {
             caps.name("short")
                 .or_else(|| caps.name("long"))
                 .or_else(|| caps.name("cross"))
+                .or_else(|| caps.name("dash"))
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
