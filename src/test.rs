@@ -323,4 +323,11 @@ fn names() {
     assert_eq!(m.imdb_tag(), Some("tt6193408"));
     assert_eq!(m.year(), Some(2019));
     assert_eq!(m.title(), "A Shaun the Sheep Movie Farmageddon");
+
+    let m = Metadata::from("Yes Day (2021) [h265 WEBDL-1080p] [tt8521876]").unwrap();
+    assert_eq!(m.season(), None);
+    assert_eq!(m.episode(), None);
+    assert_eq!(m.imdb_tag(), Some("tt8521876"));
+    assert_eq!(m.year(), Some(2021));
+    assert_eq!(m.title(), "Yes Day");
 }
