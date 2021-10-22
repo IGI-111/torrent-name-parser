@@ -20,6 +20,7 @@ pub struct Metadata {
     widescreen: bool,
     unrated: bool,
     three_d: bool,
+    imdb: Option<String>,
 }
 
 impl Metadata {
@@ -28,11 +29,13 @@ impl Metadata {
         let mut title_end = name.len();
 
         let mut captures = Vec::new();
+        dbg!(name);
         for (n, p) in all_patterns() {
             let cap = p.captures(name).map(|caps| caps.get(0));
             captures.push((n, cap));
             cap.map(|m| {
                 m.map(|n| {
+                    dbg!(n.as_str().to_string(), n.start(), n.end());
                     if p.before_title() {
                         title_start = max(title_start, n.end());
                     } else {
@@ -42,11 +45,17 @@ impl Metadata {
             });
         }
 
+        dbg!(
+            title_start,
+            title_end,
+            name[title_start..title_end].to_string(),
+        );
+
         if title_start >= title_end {
             return Err(ErrorMatch::new(captures));
         }
 
-        let mut title = name[title_start..title_end - 1].to_string();
+        let mut title = name[title_start..title_end].to_string();
         if let Some(pos) = title.find('(') {
             title = title.split_at(pos).0.to_string();
         }
@@ -102,6 +111,10 @@ impl Metadata {
             .unwrap()
             .captures(name)
             .and_then(|caps| caps.get(2).map(|m| m.as_str().to_string()));
+        let imdb = pattern("imdb")
+            .unwrap()
+            .captures(name)
+            .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
 
         let extended = pattern("extended").unwrap().captures(name).is_some();
         let hardcoded = pattern("hardcoded").unwrap().captures(name).is_some();
@@ -128,6 +141,7 @@ impl Metadata {
             widescreen,
             unrated,
             three_d,
+            imdb,
         })
     }
 
@@ -157,6 +171,9 @@ impl Metadata {
     }
     pub fn group(&self) -> Option<&str> {
         self.group.as_deref()
+    }
+    pub fn imdb_tag(&self) -> Option<&str> {
+        self.imdb.as_deref()
     }
     pub fn extended(&self) -> bool {
         self.extended

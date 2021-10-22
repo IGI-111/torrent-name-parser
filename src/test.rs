@@ -302,9 +302,7 @@ fn names() {
     assert_eq!(m.title(), "Fargo");
     assert_eq!(m.quality(), Some("WEB"));
 
-
     let m = Metadata::from("[SubsPlease] Dr. Stone S2 - 07 (1080p) [33538C7C]").unwrap();
-    dbg!(&m);
     assert_eq!(m.season(), Some(2));
     assert_eq!(m.episode(), Some(7));
     assert_eq!(m.title(), "Dr. Stone");
@@ -316,4 +314,13 @@ fn names() {
     assert_eq!(m.title(), "Fumetsu no Anata e");
     assert_eq!(m.resolution(), Some("1080p"));
 
+    let m = Metadata::from(
+        "A Shaun the Sheep Movie - Farmageddon (2019) [h265 Remux-1080p] [tt6193408]",
+    )
+    .unwrap();
+    assert_eq!(m.season(), None);
+    assert_eq!(m.episode(), None);
+    assert_eq!(m.imdb_tag(), Some("tt6193408"));
+    assert_eq!(m.year(), Some(2019));
+    assert_eq!(m.title(), "A Shaun the Sheep Movie Farmageddon");
 }

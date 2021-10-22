@@ -7,34 +7,63 @@ pub struct Pattern {
     regex: Regex,
     before_title: bool,
     capture_last: bool,
+    no_numbers_surrounding: bool,
 }
 
 macro_rules! regex {
-    ($mapping:expr, $name:expr, $pattern:expr, $before_title:expr, $capture_last:expr) => {
+    ($mapping:expr, $name:expr, $pattern:expr, $before_title:expr, $capture_last:expr, $no_numbers_surrounding:expr) => {
         $mapping.insert(
             $name,
-            Pattern::new(Regex::new($pattern).unwrap(), $before_title, $capture_last),
+            Pattern::new(
+                Regex::new($pattern).unwrap(),
+                $before_title,
+                $capture_last,
+                $no_numbers_surrounding,
+            ),
         )
     };
 
     ($mapping:expr, $name:expr, $pattern:expr) => {
-        regex!($mapping, $name, $pattern, false, false);
+        regex!($mapping, $name, $pattern, false, false, false);
     };
 }
 
 impl Pattern {
-    pub fn new(regex: Regex, before_title: bool, capture_last: bool) -> Self {
+    pub fn new(
+        regex: Regex,
+        before_title: bool,
+        capture_last: bool,
+        no_numbers_surrounding: bool,
+    ) -> Self {
         Self {
             regex,
             before_title,
             capture_last,
+            no_numbers_surrounding,
         }
     }
     pub fn captures<'t>(&self, text: &'t str) -> Option<Captures<'t>> {
+        let mut it = self.regex.captures_iter(text).filter(|cap| {
+            if self.no_numbers_surrounding {
+                let mat = cap.get(0).unwrap();
+                let start = mat.start();
+                let end = mat.end();
+                if start > 0 && text.chars().nth(start - 1).unwrap().is_digit(10) {
+                    return false;
+                }
+                if end < text.chars().count() && text.chars().nth(end).unwrap().is_digit(10) {
+                    return false;
+                }
+                true
+            } else {
+                true
+            }
+        });
+
         if self.capture_last {
-            self.regex.captures_iter(text).last()
+            it.last()
         } else {
-            self.regex.captures(text)
+            it.next()
         }
     }
 
@@ -51,7 +80,7 @@ pub fn pattern(name: &str) -> Option<&Pattern> {
     PATTERNS.get(name)
 }
 
-const ALL_RAW_PATTERNS: [(&str, &str); 18] = [
+const ALL_RAW_PATTERNS: [(&str, &str); 19] = [
     (
         "season",
         r"[Ss]?(?P<short>\d+) ?[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)|S(?P<dash>\d+) - \d+",
@@ -85,6 +114,7 @@ const ALL_RAW_PATTERNS: [(&str, &str); 18] = [
     ("unrated", r"UNRATED"),
     ("language", r"rus\.eng|US"),
     ("garbage", r"1400Mb|3rd Nov|((Rip)) "),
+    ("imdb", r"tt\d{7}"),
 ];
 
 lazy_static! {
@@ -98,12 +128,20 @@ lazy_static! {
         regex!(
             bucket,
             "year",
-            r"([\[\(]?(?P<year>(?:1[89]|20)\d\d)[\]\)]?)",
+            r"(?P<year>(1[89]|20)\d\d)",
             false,
+            true,
             true
         );
 
-        regex!(bucket, "website", r"^(\[ ?([^\]]+?) ?\]) ?", true, false);
+        regex!(
+            bucket,
+            "website",
+            r"^(\[ ?([^\]]+?) ?\]) ?",
+            true,
+            false,
+            false
+        );
 
         bucket
     };
