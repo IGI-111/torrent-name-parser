@@ -330,4 +330,6 @@ fn names() {
     assert_eq!(m.imdb_tag(), Some("tt8521876"));
     assert_eq!(m.year(), Some(2021));
     assert_eq!(m.title(), "Yes Day");
+
+    Metadata::from("[Rip Time] Mushoku Tensei_ Jobless Reincarnation - 12 [1080p]").unwrap_err();
 }

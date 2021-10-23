@@ -29,13 +29,13 @@ impl Metadata {
         let mut title_end = name.len();
 
         let mut captures = Vec::new();
-        dbg!(name);
+        // dbg!(name);
         for (n, p) in all_patterns() {
             let cap = p.captures(name).map(|caps| caps.get(0));
             captures.push((n, cap));
             cap.map(|m| {
                 m.map(|n| {
-                    dbg!(n.as_str().to_string(), n.start(), n.end());
+                    // dbg!(n.as_str().to_string(), n.start(), n.end());
                     if p.before_title() {
                         title_start = max(title_start, n.end());
                     } else {
@@ -45,17 +45,17 @@ impl Metadata {
             });
         }
 
-        dbg!(
-            title_start,
-            title_end,
-            name[title_start..title_end].to_string(),
-        );
+        // dbg!(
+        //     title_start,
+        //     title_end,
+        //     name[title_start..title_end-1].to_string(),
+        // );
 
         if title_start >= title_end {
             return Err(ErrorMatch::new(captures));
         }
 
-        let mut title = name[title_start..title_end].to_string();
+        let mut title = name[title_start..title_end - 1].to_string();
         if let Some(pos) = title.find('(') {
             title = title.split_at(pos).0.to_string();
         }
