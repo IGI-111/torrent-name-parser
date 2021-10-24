@@ -46,13 +46,32 @@ impl Pattern {
         let mut it = self.regex.captures_iter(text).filter(|cap| {
             if self.no_numbers_surrounding {
                 let mat = cap.get(0).unwrap();
+
                 let start = mat.start();
-                let end = mat.end();
-                if start > 0 && text.chars().nth(start - 1).unwrap().is_digit(10) {
-                    return false;
+                if start > 0 {
+                    // find previous char start
+                    let mut prev = start - 1;
+                    while !text.is_char_boundary(prev) {
+                        prev -= 1;
+                    }
+
+                    let prev_char = text[prev..].chars().next().unwrap();
+                    if prev_char.is_digit(10) {
+                        return false;
+                    }
                 }
-                if end < text.chars().count() && text.chars().nth(end).unwrap().is_digit(10) {
-                    return false;
+
+                let end = mat.end();
+                if end < text.len() {
+                    // find next char start
+                    let mut next = end;
+                    while !text.is_char_boundary(end) {
+                        next += 1;
+                    }
+                    let next_char = text[next..].chars().next().unwrap();
+                    if next_char.is_digit(10) {
+                        return false;
+                    }
                 }
                 true
             } else {

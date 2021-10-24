@@ -331,5 +331,21 @@ fn names() {
     assert_eq!(m.year(), Some(2021));
     assert_eq!(m.title(), "Yes Day");
 
+    // FIXME
     Metadata::from("[Rip Time] Mushoku Tensei_ Jobless Reincarnation - 12 [1080p]").unwrap_err();
+
+    let m = Metadata::from(
+        "Pokémon the Movie - Black - Victini and Reshiram (2011) [x265 Bluray-1080p] [tt1961324]",
+    )
+    .unwrap();
+    assert_eq!(m.season(), None);
+    assert_eq!(m.episode(), None);
+    assert_eq!(m.imdb_tag(), Some("tt1961324"));
+    assert_eq!(m.title(), "Pokémon the Movie Black - Victini and Reshiram");
+    assert_eq!(m.year(), Some(2011));
+}
+
+#[test]
+fn unicode() {
+    Metadata::from("éé").unwrap();
 }

@@ -26,16 +26,14 @@ pub struct Metadata {
 impl Metadata {
     pub fn from(name: &str) -> Result<Self, ErrorMatch> {
         let mut title_start = 0;
-        let mut title_end = name.len();
+        let mut title_end = name.len() + 1;
 
         let mut captures = Vec::new();
-        // dbg!(name);
-        for (n, p) in all_patterns() {
+        for (pname, p) in all_patterns() {
             let cap = p.captures(name).map(|caps| caps.get(0));
-            captures.push((n, cap));
+            captures.push((pname, cap));
             cap.map(|m| {
                 m.map(|n| {
-                    // dbg!(n.as_str().to_string(), n.start(), n.end());
                     if p.before_title() {
                         title_start = max(title_start, n.end());
                     } else {
@@ -44,12 +42,6 @@ impl Metadata {
                 })
             });
         }
-
-        // dbg!(
-        //     title_start,
-        //     title_end,
-        //     name[title_start..title_end-1].to_string(),
-        // );
 
         if title_start >= title_end {
             return Err(ErrorMatch::new(captures));
