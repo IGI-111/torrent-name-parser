@@ -26,7 +26,7 @@ pub struct Metadata {
 impl Metadata {
     pub fn from(name: &str) -> Result<Self, ErrorMatch> {
         let mut title_start = 0;
-        let mut title_end = name.len() + 1;
+        let mut title_end = name.len();
 
         let mut captures = Vec::new();
         for (pname, p) in all_patterns() {
@@ -47,7 +47,7 @@ impl Metadata {
             return Err(ErrorMatch::new(captures));
         }
 
-        let mut title = name[title_start..title_end - 1].to_string();
+        let mut title = name[title_start..title_end].to_string();
         if let Some(pos) = title.find('(') {
             title = title.split_at(pos).0.to_string();
         }

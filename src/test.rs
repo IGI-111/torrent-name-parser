@@ -348,4 +348,6 @@ fn names() {
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();
+    Metadata::from("é2000").unwrap();
+    Metadata::from("é2000é").unwrap();
 }
