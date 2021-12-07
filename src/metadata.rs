@@ -2,7 +2,7 @@ use crate::error::ErrorMatch;
 use crate::pattern::{all_patterns, pattern};
 use std::cmp::{max, min};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Metadata {
     title: String,
     season: Option<i32>,
