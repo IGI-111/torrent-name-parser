@@ -338,8 +338,6 @@ pub fn names() {
     assert_eq!(m.year(), Some(2021));
     assert_eq!(m.title(), "Yes Day");
 
-    let m = Metadata::from("[Rip Time] Mushoku Tensei_ Jobless Reincarnation - 12 [1080p]").unwrap();
-
     let m = Metadata::from(
         "Pokémon the Movie - Black - Victini and Reshiram (2011) [x265 Bluray-1080p] [tt1961324]",
     )
