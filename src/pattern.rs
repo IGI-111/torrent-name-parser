@@ -1,5 +1,4 @@
 use regex::{Captures, Regex};
-use std::convert::TryInto;
 use std::iter::Iterator;
 
 #[derive(Debug)]
@@ -88,82 +87,34 @@ impl Pattern {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub enum PatternName {
-    Season,
-    Episode,
-    Resolution,
-    Quality,
-    Codec,
-    Audio,
-    Group,
-    Region,
-    Extended,
-    Hardcoded,
-    Proper,
-    Repack,
-    Container,
-    Widescreen,
-    ThreeD,
-    Unrated,
-    Language,
-    Garbage,
-    Imdb,
-    Year,
-    Website,
-}
-
-const ALL_RAW_PATTERNS: [(PatternName, &str); 19] = [
-    (
-        PatternName::Season,
-        r"[Ss]?(?P<short>\d+) ?[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)|S(?P<dash>\d+) - \d+",
-    ),
-    (
-        PatternName::Episode,
-        r"[Ee](?P<short>\d+)(?:[^\d]|$)|(Episode|EPISODE)(?:[^\d]|$)(?P<long>\d+)|\d+x(?P<cross>\d+)|S\d+ - (?P<dash>\d+)",
-    ),
-    (PatternName::Resolution, r"((\d{3,4}p))[^M]"),
-    (
-        PatternName::Quality,
-        r"(?:PPV\.)?[HP]DTV|(?:HD)?CAM|B[rR]Rip|TS|(?:PPV )?WEB-?(DL)?(?: DVDRip)?|H[dD]Rip|DVDRip|DVDRiP|DVDRIP|CamRip|W[EB]B[rR]ip|[Bb]lu[Rr]ay|DvDScr|hdtv",
-    ),
-    (
-        PatternName::Codec,
-        r"[Xx][Vv][Ii][Dd]|[Xx]264|[hH]\.?264/?|[Xx]265|[Hh]\.?265|[Hh][Ee][Vv][Cc]?",
-    ),
-    (
-        PatternName::Audio,
-        r"MP3|DD5\.?1|Dual[\- ]Audio|LiNE|DTS|AAC(?:\.?2\.0)?|AC3(?:\.5\.1)?",
-    ),
-    (PatternName::Group, r"(- ?([^ -]+(?:-=\{[^ -]+-?$)?))$"),
-    (PatternName::Region, r"R\d"),
-    (PatternName::Extended, r"EXTENDED"),
-    (PatternName::Hardcoded, r"HC"),
-    (PatternName::Proper, r"PROPER"),
-    (PatternName::Repack, r"REPACK"),
-    (PatternName::Container, r"MKV|AVI"),
-    (PatternName::Widescreen, r"WS"),
-    (PatternName::ThreeD, r"3D"),
-    (PatternName::Unrated, r"UNRATED"),
-    (PatternName::Language, r"rus\.eng|US"),
-    (PatternName::Garbage, r"1400Mb|3rd Nov|((Rip)) "),
-    (PatternName::Imdb, r"tt\d{7}"),
-];
-
 lazy_static! {
-    pub static ref PATTERNS: [(PatternName, Pattern); 21] = {
-        let mut bucket: Vec<_> = ALL_RAW_PATTERNS
-            .iter()
-            .map(|(name, regex)| (*name, regex!(regex)))
-            .collect();
-        bucket.push((
-            PatternName::Year,
-            regex!(r"(?P<year>(1[89]|20)\d\d)", false, true, true),
-        ));
-        bucket.push((
-            PatternName::Website,
-            regex!(r"^(\[ ?([^\]]+?) ?\]) ?", true, false, false),
-        ));
-        bucket.try_into().unwrap()
-    };
+    pub static ref SEASON: Pattern = regex!(
+        r"[Ss]?(?P<short>\d+) ?[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)|S(?P<dash>\d+) - \d+"
+    );
+    pub static ref EPISODE: Pattern = regex!(
+        r"[Ee](?P<short>\d+)(?:[^\d]|$)|(Episode|EPISODE)(?:[^\d]|$)(?P<long>\d+)|\d+x(?P<cross>\d+)|S\d+ - (?P<dash>\d+)"
+    );
+    pub static ref RESOLUTION: Pattern = regex!(r"((\d{3,4}p))[^M]");
+    pub static ref QUALITY: Pattern = regex!(
+        r"(?:PPV\.)?[HP]DTV|(?:HD)?CAM|B[rR]Rip|TS|(?:PPV )?WEB-?(DL)?(?: DVDRip)?|H[dD]Rip|DVDRip|DVDRiP|DVDRIP|CamRip|W[EB]B[rR]ip|[Bb]lu[Rr]ay|DvDScr|hdtv"
+    );
+    pub static ref CODEC: Pattern =
+        regex!(r"[Xx][Vv][Ii][Dd]|[Xx]264|[hH]\.?264/?|[Xx]265|[Hh]\.?265|[Hh][Ee][Vv][Cc]?");
+    pub static ref AUDIO: Pattern =
+        regex!(r"MP3|DD5\.?1|Dual[\- ]Audio|LiNE|DTS|AAC(?:\.?2\.0)?|AC3(?:\.5\.1)?");
+    pub static ref GROUP: Pattern = regex!(r"(- ?([^ -]+(?:-=\{[^ -]+-?$)?))$");
+    pub static ref REGION: Pattern = regex!(r"R\d");
+    pub static ref EXTENDED: Pattern = regex!(r"EXTENDED");
+    pub static ref HARDCODED: Pattern = regex!(r"HC");
+    pub static ref PROPER: Pattern = regex!(r"PROPER");
+    pub static ref REPACK: Pattern = regex!(r"REPACK");
+    pub static ref CONTAINER: Pattern = regex!(r"MKV|AVI");
+    pub static ref WIDESCREEN: Pattern = regex!(r"WS");
+    pub static ref THREE_D: Pattern = regex!(r"3D");
+    pub static ref UNRATED: Pattern = regex!(r"UNRATED");
+    pub static ref LANGUAGE: Pattern = regex!(r"rus\.eng|US");
+    pub static ref GARBAGE: Pattern = regex!(r"1400Mb|3rd Nov|((Rip)) ");
+    pub static ref IMDB: Pattern = regex!(r"tt\d{7}");
+    pub static ref YEAR: Pattern = regex!(r"(?P<year>(1[89]|20)\d\d)", false, true, true);
+    pub static ref WEBSITE: Pattern = regex!(r"^(\[ ?([^\]]+?) ?\]) ?", true, false, false);
 }
