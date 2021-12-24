@@ -1,5 +1,5 @@
 use crate::error::ErrorMatch;
-use crate::pattern::all_patterns;
+use crate::pattern::{PatternName, PATTERNS};
 use std::borrow::Cow;
 use std::cmp::{max, min};
 use std::collections::HashMap;
@@ -30,9 +30,8 @@ impl Metadata {
         let mut title_start = 0;
         let mut title_end = name.len();
 
-        let patterns = all_patterns().collect::<Vec<_>>();
-        let mut captures = HashMap::with_capacity(patterns.len());
-        for (pname, p) in patterns {
+        let mut captures = HashMap::with_capacity(PATTERNS.len());
+        for (pname, p) in PATTERNS.iter() {
             if let Some(m) = p.captures(name) {
                 if let Some(cap) = m.get(0) {
                     if p.before_title() {
@@ -68,14 +67,14 @@ impl Metadata {
             .trim()
             .to_string();
 
-        let season = captures.get("season").and_then(|caps| {
+        let season = captures.get(&PatternName::Season).and_then(|caps| {
             caps.name("short")
                 .or_else(|| caps.name("long"))
                 .or_else(|| caps.name("dash"))
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
-        let episode = captures.get("episode").and_then(|caps| {
+        let episode = captures.get(&PatternName::Episode).and_then(|caps| {
             caps.name("short")
                 .or_else(|| caps.name("long"))
                 .or_else(|| caps.name("cross"))
@@ -83,37 +82,37 @@ impl Metadata {
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
-        let year = captures.get("year").and_then(|caps| {
+        let year = captures.get(&PatternName::Year).and_then(|caps| {
             caps.name("year")
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
         let resolution = captures
-            .get("resolution")
+            .get(&PatternName::Resolution)
             .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()));
         let quality = captures
-            .get("quality")
+            .get(&PatternName::Quality)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
         let codec = captures
-            .get("codec")
+            .get(&PatternName::Codec)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
         let audio = captures
-            .get("audio")
+            .get(&PatternName::Audio)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
         let group = captures
-            .get("group")
+            .get(&PatternName::Group)
             .and_then(|caps| caps.get(2).map(|m| m.as_str().to_string()));
         let imdb = captures
-            .get("imdb")
+            .get(&PatternName::Imdb)
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
 
-        let extended = captures.contains_key("extended");
-        let hardcoded = captures.contains_key("hardcoded");
-        let proper = captures.contains_key("proper");
-        let repack = captures.contains_key("repack");
-        let widescreen = captures.contains_key("widescreen");
-        let unrated = captures.contains_key("unrated");
-        let three_d = captures.contains_key("three_d");
+        let extended = captures.contains_key(&PatternName::Extended);
+        let hardcoded = captures.contains_key(&PatternName::Hardcoded);
+        let proper = captures.contains_key(&PatternName::Proper);
+        let repack = captures.contains_key(&PatternName::Repack);
+        let widescreen = captures.contains_key(&PatternName::Widescreen);
+        let unrated = captures.contains_key(&PatternName::Unrated);
+        let three_d = captures.contains_key(&PatternName::ThreeD);
 
         Ok(Metadata {
             title,

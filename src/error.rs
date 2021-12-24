@@ -1,14 +1,15 @@
+use crate::pattern::PatternName;
 use regex::Match;
 use std::error::Error;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct ErrorMatch<'t> {
-    matches: Vec<(&'static str, Option<Match<'t>>)>,
+    matches: Vec<(PatternName, Option<Match<'t>>)>,
 }
 
 impl<'t> ErrorMatch<'t> {
-    pub fn new(matches: Vec<(&'static str, Option<Match<'t>>)>) -> ErrorMatch<'t> {
+    pub fn new(matches: Vec<(PatternName, Option<Match<'t>>)>) -> ErrorMatch<'t> {
         ErrorMatch { matches }
     }
 }
