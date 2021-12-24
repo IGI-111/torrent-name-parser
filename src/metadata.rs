@@ -1,5 +1,6 @@
 use crate::error::ErrorMatch;
 use crate::pattern::all_patterns;
+use std::borrow::Cow;
 use std::cmp::{max, min};
 use std::collections::HashMap;
 
@@ -50,16 +51,17 @@ impl Metadata {
             ));
         }
 
-        let mut title = name[title_start..title_end].to_string();
+        let mut title = &name[title_start..title_end];
         if let Some(pos) = title.find('(') {
-            title = title.split_at(pos).0.to_string();
+            title = title.split_at(pos).0;
         }
-        title = title.trim_start_matches(" -").to_string();
-        title = title.trim_end_matches(" -").to_string();
-        if !title.contains(' ') && title.contains('.') {
-            title = title.replace('.', " ")
-        }
-        title = title
+        title = title.trim_start_matches(" -");
+        title = title.trim_end_matches(" -");
+        let title = match !title.contains(' ') && title.contains('.') {
+            true => Cow::Owned(title.replace('.', " ")),
+            false => Cow::Borrowed(title),
+        };
+        let title = title
             .replace('_', " ")
             .replacen('(', "", 1)
             .replacen("- ", "", 1)
