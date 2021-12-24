@@ -57,11 +57,11 @@ impl Metadata {
         title = title.trim_start_matches(" -").to_string();
         title = title.trim_end_matches(" -").to_string();
         if !title.contains(' ') && title.contains('.') {
-            title = title.replace(".", " ")
+            title = title.replace('.', " ")
         }
         title = title
-            .replace("_", " ")
-            .replacen("(", "", 1)
+            .replace('_', " ")
+            .replacen('(', "", 1)
             .replacen("- ", "", 1)
             .trim()
             .to_string();
