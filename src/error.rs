@@ -4,11 +4,11 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct ErrorMatch<'t> {
-    matches: Vec<(&'t &'t str, Option<Option<Match<'t>>>)>,
+    matches: Vec<(&'static str, Option<Match<'t>>)>,
 }
 
 impl<'t> ErrorMatch<'t> {
-    pub fn new(matches: Vec<(&'t &'t str, Option<Option<Match<'t>>>)>) -> ErrorMatch {
+    pub fn new(matches: Vec<(&'static str, Option<Match<'t>>)>) -> ErrorMatch<'t> {
         ErrorMatch { matches }
     }
 }
