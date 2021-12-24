@@ -95,10 +95,6 @@ pub fn all_patterns() -> impl Iterator<Item = (&'static &'static str, &'static P
     PATTERNS.iter()
 }
 
-pub fn pattern(name: &str) -> Option<&Pattern> {
-    PATTERNS.get(name)
-}
-
 const ALL_RAW_PATTERNS: [(&str, &str); 19] = [
     (
         "season",

@@ -1,6 +1,8 @@
 use crate::error::ErrorMatch;
-use crate::pattern::{all_patterns, pattern};
+use crate::pattern::all_patterns;
+use std::borrow::Cow;
 use std::cmp::{max, min};
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Metadata {
@@ -28,49 +30,52 @@ impl Metadata {
         let mut title_start = 0;
         let mut title_end = name.len();
 
-        let mut captures = Vec::new();
-        for (pname, p) in all_patterns() {
-            let cap = p.captures(name).map(|caps| caps.get(0));
-            captures.push((pname, cap));
-            cap.map(|m| {
-                m.map(|n| {
+        let patterns = all_patterns().collect::<Vec<_>>();
+        let mut captures = HashMap::with_capacity(patterns.len());
+        for (pname, p) in patterns {
+            if let Some(m) = p.captures(name) {
+                if let Some(cap) = m.get(0) {
                     if p.before_title() {
-                        title_start = max(title_start, n.end());
+                        title_start = max(title_start, cap.end());
                     } else {
-                        title_end = min(title_end, n.start());
+                        title_end = min(title_end, cap.start());
                     }
-                })
-            });
+                }
+                captures.insert(*pname, m);
+            }
         }
 
         if title_start >= title_end {
-            return Err(ErrorMatch::new(captures));
+            return Err(ErrorMatch::new(
+                captures.into_iter().map(|(k, v)| (k, v.get(0))).collect(),
+            ));
         }
 
-        let mut title = name[title_start..title_end].to_string();
+        let mut title = &name[title_start..title_end];
         if let Some(pos) = title.find('(') {
-            title = title.split_at(pos).0.to_string();
+            title = title.split_at(pos).0;
         }
-        title = title.trim_start_matches(" -").to_string();
-        title = title.trim_end_matches(" -").to_string();
-        if !title.contains(' ') && title.contains('.') {
-            title = title.replace(".", " ")
-        }
-        title = title
-            .replace("_", " ")
-            .replacen("(", "", 1)
+        title = title.trim_start_matches(" -");
+        title = title.trim_end_matches(" -");
+        let title = match !title.contains(' ') && title.contains('.') {
+            true => Cow::Owned(title.replace('.', " ")),
+            false => Cow::Borrowed(title),
+        };
+        let title = title
+            .replace('_', " ")
+            .replacen('(', "", 1)
             .replacen("- ", "", 1)
             .trim()
             .to_string();
 
-        let season = pattern("season").unwrap().captures(name).and_then(|caps| {
+        let season = captures.get("season").and_then(|caps| {
             caps.name("short")
                 .or_else(|| caps.name("long"))
                 .or_else(|| caps.name("dash"))
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
-        let episode = pattern("episode").unwrap().captures(name).and_then(|caps| {
+        let episode = captures.get("episode").and_then(|caps| {
             caps.name("short")
                 .or_else(|| caps.name("long"))
                 .or_else(|| caps.name("cross"))
@@ -78,43 +83,37 @@ impl Metadata {
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
-        let year = pattern("year").unwrap().captures(name).and_then(|caps| {
+        let year = captures.get("year").and_then(|caps| {
             caps.name("year")
                 .map(|m| m.as_str())
                 .map(|s| s.parse().unwrap())
         });
-        let resolution = pattern("resolution")
-            .unwrap()
-            .captures(name)
+        let resolution = captures
+            .get("resolution")
             .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()));
-        let quality = pattern("quality")
-            .unwrap()
-            .captures(name)
+        let quality = captures
+            .get("quality")
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-        let codec = pattern("codec")
-            .unwrap()
-            .captures(name)
+        let codec = captures
+            .get("codec")
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-        let audio = pattern("audio")
-            .unwrap()
-            .captures(name)
+        let audio = captures
+            .get("audio")
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-        let group = pattern("group")
-            .unwrap()
-            .captures(name)
+        let group = captures
+            .get("group")
             .and_then(|caps| caps.get(2).map(|m| m.as_str().to_string()));
-        let imdb = pattern("imdb")
-            .unwrap()
-            .captures(name)
+        let imdb = captures
+            .get("imdb")
             .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
 
-        let extended = pattern("extended").unwrap().captures(name).is_some();
-        let hardcoded = pattern("hardcoded").unwrap().captures(name).is_some();
-        let proper = pattern("proper").unwrap().captures(name).is_some();
-        let repack = pattern("repack").unwrap().captures(name).is_some();
-        let widescreen = pattern("widescreen").unwrap().captures(name).is_some();
-        let unrated = pattern("unrated").unwrap().captures(name).is_some();
-        let three_d = pattern("three_d").unwrap().captures(name).is_some();
+        let extended = captures.contains_key("extended");
+        let hardcoded = captures.contains_key("hardcoded");
+        let proper = captures.contains_key("proper");
+        let repack = captures.contains_key("repack");
+        let widescreen = captures.contains_key("widescreen");
+        let unrated = captures.contains_key("unrated");
+        let three_d = captures.contains_key("three_d");
 
         Ok(Metadata {
             title,
