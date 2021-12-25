@@ -1,25 +1,24 @@
-use regex::Match;
 use std::error::Error;
 use std::fmt;
 
 #[derive(Debug)]
-pub struct ErrorMatch<'t> {
-    matches: Vec<(&'static str, Option<Match<'t>>)>,
+pub struct ErrorMatch {
+    matches: Vec<(&'static str, Option<String>)>,
 }
 
-impl<'t> ErrorMatch<'t> {
-    pub fn new(matches: Vec<(&'static str, Option<Match<'t>>)>) -> ErrorMatch<'t> {
+impl ErrorMatch {
+    pub fn new(matches: Vec<(&'static str, Option<String>)>) -> ErrorMatch {
         ErrorMatch { matches }
     }
 }
 
-impl fmt::Display for ErrorMatch<'_> {
+impl fmt::Display for ErrorMatch {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self.matches)
     }
 }
 
-impl Error for ErrorMatch<'_> {
+impl Error for ErrorMatch {
     fn description(&self) -> &str {
         "Couldn't find a title."
     }

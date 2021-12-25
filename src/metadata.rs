@@ -1,8 +1,9 @@
 use crate::error::ErrorMatch;
-use crate::pattern::all_patterns;
+use crate::pattern;
+use crate::pattern::Pattern;
+use regex::Captures;
 use std::borrow::Cow;
 use std::cmp::{max, min};
-use std::collections::HashMap;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Metadata {
@@ -25,30 +26,174 @@ pub struct Metadata {
     imdb: Option<String>,
 }
 
+fn check_pattern_and_extract<'a>(
+    pattern: &Pattern,
+    torrent_name: &'a str,
+    title_start: &mut usize,
+    title_end: &mut usize,
+    extract_value: impl Fn(Captures<'a>) -> Option<&'a str>,
+) -> Option<&'a str> {
+    pattern.captures(torrent_name).and_then(|caps| {
+        if let Some(cap) = caps.get(0) {
+            if pattern.before_title() {
+                *title_start = max(*title_start, cap.end());
+            } else {
+                *title_end = min(*title_end, cap.start());
+            }
+        }
+        extract_value(caps)
+    })
+}
+
+fn check_pattern<'a>(
+    pattern: &Pattern,
+    torrent_name: &'a str,
+    title_start: &mut usize,
+    title_end: &mut usize,
+) -> Option<Captures<'a>> {
+    pattern.captures(torrent_name).map(|caps| {
+        if let Some(cap) = caps.get(0) {
+            if pattern.before_title() {
+                *title_start = max(*title_start, cap.end());
+            } else {
+                *title_end = min(*title_end, cap.start());
+            }
+        }
+        caps
+    })
+}
+
+fn capture_to_string(caps: Option<Captures<'_>>) -> Option<String> {
+    caps.and_then(|c| c.get(0)).map(|m| m.as_str().to_string())
+}
+
 impl Metadata {
     pub fn from(name: &str) -> Result<Self, ErrorMatch> {
         let mut title_start = 0;
         let mut title_end = name.len();
 
-        let patterns = all_patterns().collect::<Vec<_>>();
-        let mut captures = HashMap::with_capacity(patterns.len());
-        for (pname, p) in patterns {
-            if let Some(m) = p.captures(name) {
-                if let Some(cap) = m.get(0) {
-                    if p.before_title() {
-                        title_start = max(title_start, cap.end());
-                    } else {
-                        title_end = min(title_end, cap.start());
-                    }
-                }
-                captures.insert(*pname, m);
-            }
-        }
+        let season = check_pattern_and_extract(
+            &pattern::SEASON,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| {
+                caps.name("short")
+                    .or_else(|| caps.name("long"))
+                    .or_else(|| caps.name("dash"))
+                    .map(|m| m.as_str())
+            },
+        );
+
+        let episode = check_pattern_and_extract(
+            &pattern::EPISODE,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| {
+                caps.name("short")
+                    .or_else(|| caps.name("long"))
+                    .or_else(|| caps.name("cross"))
+                    .or_else(|| caps.name("dash"))
+                    .map(|m| m.as_str())
+            },
+        );
+
+        let year = check_pattern_and_extract(
+            &pattern::YEAR,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps: Captures<'_>| caps.name("year").map(|m| m.as_str()),
+        );
+
+        let resolution = check_pattern_and_extract(
+            &pattern::RESOLUTION,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(1).map(|m| m.as_str()),
+        )
+        .map(String::from);
+        let quality = check_pattern_and_extract(
+            &pattern::QUALITY,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(0).map(|m| m.as_str()),
+        )
+        .map(String::from);
+        let codec = check_pattern_and_extract(
+            &pattern::CODEC,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(0).map(|m| m.as_str()),
+        )
+        .map(String::from);
+        let audio = check_pattern_and_extract(
+            &pattern::AUDIO,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(0).map(|m| m.as_str()),
+        )
+        .map(String::from);
+        let group = check_pattern_and_extract(
+            &pattern::GROUP,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(2).map(|m| m.as_str()),
+        )
+        .map(String::from);
+        let imdb = check_pattern_and_extract(
+            &pattern::IMDB,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(0).map(|m| m.as_str()),
+        )
+        .map(String::from);
+
+        let extended = check_pattern(&pattern::EXTENDED, name, &mut title_start, &mut title_end);
+        let hardcoded = check_pattern(&pattern::HARDCODED, name, &mut title_start, &mut title_end);
+        let proper = check_pattern(&pattern::PROPER, name, &mut title_start, &mut title_end);
+        let repack = check_pattern(&pattern::REPACK, name, &mut title_start, &mut title_end);
+        let widescreen =
+            check_pattern(&pattern::WIDESCREEN, name, &mut title_start, &mut title_end);
+        let unrated = check_pattern(&pattern::UNRATED, name, &mut title_start, &mut title_end);
+        let three_d = check_pattern(&pattern::THREE_D, name, &mut title_start, &mut title_end);
+
+        let region = check_pattern(&pattern::REGION, name, &mut title_start, &mut title_end);
+        let container = check_pattern(&pattern::CONTAINER, name, &mut title_start, &mut title_end);
+        let language = check_pattern(&pattern::LANGUAGE, name, &mut title_start, &mut title_end);
+        let garbage = check_pattern(&pattern::GARBAGE, name, &mut title_start, &mut title_end);
+        let website = check_pattern(&pattern::WEBSITE, name, &mut title_start, &mut title_end);
 
         if title_start >= title_end {
-            return Err(ErrorMatch::new(
-                captures.into_iter().map(|(k, v)| (k, v.get(0))).collect(),
-            ));
+            return Err(ErrorMatch::new(vec![
+                ("season", season.map(String::from)),
+                ("episode", episode.map(String::from)),
+                ("year", year.map(String::from)),
+                ("resolution", resolution),
+                ("quality", quality),
+                ("codec", codec),
+                ("audio", audio),
+                ("group", group),
+                ("imdb", imdb),
+                ("extended", capture_to_string(extended)),
+                ("proper", capture_to_string(proper)),
+                ("repack", capture_to_string(repack)),
+                ("widescreen", capture_to_string(widescreen)),
+                ("unrated", capture_to_string(unrated)),
+                ("three_d", capture_to_string(three_d)),
+                ("region", capture_to_string(region)),
+                ("container", capture_to_string(container)),
+                ("language", capture_to_string(language)),
+                ("garbage", capture_to_string(garbage)),
+                ("website", capture_to_string(website)),
+            ]));
         }
 
         let mut title = &name[title_start..title_end];
@@ -68,70 +213,23 @@ impl Metadata {
             .trim()
             .to_string();
 
-        let season = captures.get("season").and_then(|caps| {
-            caps.name("short")
-                .or_else(|| caps.name("long"))
-                .or_else(|| caps.name("dash"))
-                .map(|m| m.as_str())
-                .map(|s| s.parse().unwrap())
-        });
-        let episode = captures.get("episode").and_then(|caps| {
-            caps.name("short")
-                .or_else(|| caps.name("long"))
-                .or_else(|| caps.name("cross"))
-                .or_else(|| caps.name("dash"))
-                .map(|m| m.as_str())
-                .map(|s| s.parse().unwrap())
-        });
-        let year = captures.get("year").and_then(|caps| {
-            caps.name("year")
-                .map(|m| m.as_str())
-                .map(|s| s.parse().unwrap())
-        });
-        let resolution = captures
-            .get("resolution")
-            .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()));
-        let quality = captures
-            .get("quality")
-            .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-        let codec = captures
-            .get("codec")
-            .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-        let audio = captures
-            .get("audio")
-            .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-        let group = captures
-            .get("group")
-            .and_then(|caps| caps.get(2).map(|m| m.as_str().to_string()));
-        let imdb = captures
-            .get("imdb")
-            .and_then(|caps| caps.get(0).map(|m| m.as_str().to_string()));
-
-        let extended = captures.contains_key("extended");
-        let hardcoded = captures.contains_key("hardcoded");
-        let proper = captures.contains_key("proper");
-        let repack = captures.contains_key("repack");
-        let widescreen = captures.contains_key("widescreen");
-        let unrated = captures.contains_key("unrated");
-        let three_d = captures.contains_key("three_d");
-
         Ok(Metadata {
             title,
-            season,
-            episode,
-            year,
+            season: season.map(|s| s.parse().unwrap()),
+            episode: episode.map(|s| s.parse().unwrap()),
+            year: year.map(|s| s.parse().unwrap()),
             resolution,
             quality,
             codec,
             audio,
             group,
-            extended,
-            hardcoded,
-            proper,
-            repack,
-            widescreen,
-            unrated,
-            three_d,
+            extended: extended.is_some(),
+            hardcoded: hardcoded.is_some(),
+            proper: proper.is_some(),
+            repack: repack.is_some(),
+            widescreen: widescreen.is_some(),
+            unrated: unrated.is_some(),
+            three_d: three_d.is_some(),
             imdb,
         })
     }
