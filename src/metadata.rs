@@ -77,13 +77,13 @@ impl Metadata {
     pub fn title(&self) -> &str {
         &self.title
     }
-    pub fn season(&self) -> Option<u32> {
+    pub fn season(&self) -> Option<i32> {
         self.season
     }
-    pub fn episode(&self) -> Option<u32> {
+    pub fn episode(&self) -> Option<i32> {
         self.episode
     }
-    pub fn year(&self) -> Option<u32> {
+    pub fn year(&self) -> Option<i32> {
         self.year
     }
     pub fn resolution(&self) -> Option<&str> {
