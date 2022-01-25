@@ -10,9 +10,9 @@ use std::{convert::TryFrom, str::FromStr};
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Metadata {
     title: String,
-    season: Option<u32>,
-    episode: Option<u32>,
-    year: Option<u32>,
+    season: Option<i32>,
+    episode: Option<i32>,
+    year: Option<i32>,
     resolution: Option<String>,
     quality: Option<String>,
     codec: Option<String>,
