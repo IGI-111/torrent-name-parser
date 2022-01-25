@@ -88,18 +88,16 @@ impl Pattern {
 }
 
 lazy_static! {
-    pub static ref SEASON: Pattern = regex!(
-        r"[Ss]?(?P<short>\d+) ?[Eex]|(Season|SEASON)(?:[^\d]|$)(?P<long>\d+)|S(?P<dash>\d+) - \d+"
-    );
+    pub static ref SEASON: Pattern =
+        regex!(r"(?i)s?(?P<short>\d+) ?[ex]|(season)(?:[^\d]|$)(?P<long>\d+)|s(?P<dash>\d+) - \d+");
     pub static ref EPISODE: Pattern = regex!(
-        r"[Ee](?P<short>\d+)(?:[^\d]|$)|(Episode|EPISODE)(?:[^\d]|$)(?P<long>\d+)|\d+x(?P<cross>\d+)|S\d+ - (?P<dash>\d+)"
+        r"(?i)e(?P<short>\d+)(?:[^\d]|$)|(episode)(?:[^\d]|$)(?P<long>\d+)|\d+x(?P<cross>\d+)|s\d+ - (?P<dash>\d+)"
     );
     pub static ref RESOLUTION: Pattern = regex!(r"((\d{3,4}p))[^M]");
     pub static ref QUALITY: Pattern = regex!(
         r"(?:PPV\.)?[HP]DTV|(?:HD)?CAM|B[rR]Rip|TS|(?:PPV )?WEB-?(DL)?(?: DVDRip)?|H[dD]Rip|DVDRip|DVDRiP|DVDRIP|CamRip|W[EB]B[rR]ip|[Bb]lu[Rr]ay|DvDScr|hdtv"
     );
-    pub static ref CODEC: Pattern =
-        regex!(r"[Xx][Vv][Ii][Dd]|[Xx]264|[hH]\.?264/?|[Xx]265|[Hh]\.?265|[Hh][Ee][Vv][Cc]?");
+    pub static ref CODEC: Pattern = regex!(r"(?i)xvid|x264|h\.?264/?|x265|h\.?265|hevc?");
     pub static ref AUDIO: Pattern =
         regex!(r"MP3|DD5\.?1|Dual[\- ]Audio|LiNE|DTS|AAC(?:\.?2\.0)?|AC3(?:\.5\.1)?");
     pub static ref GROUP: Pattern = regex!(r"(- ?([^ -]+(?:-=\{[^ -]+-?$)?))$");
