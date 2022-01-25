@@ -345,6 +345,32 @@ fn names() {
     assert_eq!(m.year(), Some(2011));
 }
 
+#[cfg(test)]
+mod parse {
+    use super::*;
+    #[test]
+    fn parse_test_one() {
+        let m = "Yes Day (2021) [h265 WEBDL-1080p] [tt8521876]"
+            .parse::<Metadata>()
+            .unwrap();
+        assert_eq!(m.season(), None);
+        assert_eq!(m.episode(), None);
+        assert_eq!(m.imdb_tag(), Some("tt8521876"));
+        assert_eq!(m.year(), Some(2021));
+        assert_eq!(m.title(), "Yes Day");
+    }
+    #[test]
+    fn parse_test_two() {
+        let m: Metadata = "Yes Day (2021) [h265 WEBDL-1080p] [tt8521876]"
+            .parse()
+            .unwrap();
+        assert_eq!(m.season(), None);
+        assert_eq!(m.episode(), None);
+        assert_eq!(m.imdb_tag(), Some("tt8521876"));
+        assert_eq!(m.year(), Some(2021));
+        assert_eq!(m.title(), "Yes Day");
+    }
+}
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();
