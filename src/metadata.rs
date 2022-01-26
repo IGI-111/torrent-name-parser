@@ -5,6 +5,8 @@ use regex::Captures;
 use std::borrow::Cow;
 use std::cmp::{max, min};
 
+use std::{convert::TryFrom, str::FromStr};
+
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Metadata {
     title: String,
@@ -69,6 +71,66 @@ fn capture_to_string(caps: Option<Captures<'_>>) -> Option<String> {
 
 impl Metadata {
     pub fn from(name: &str) -> Result<Self, ErrorMatch> {
+        Metadata::from_str(name)
+    }
+
+    pub fn title(&self) -> &str {
+        &self.title
+    }
+    pub fn season(&self) -> Option<i32> {
+        self.season
+    }
+    pub fn episode(&self) -> Option<i32> {
+        self.episode
+    }
+    pub fn year(&self) -> Option<i32> {
+        self.year
+    }
+    pub fn resolution(&self) -> Option<&str> {
+        self.resolution.as_deref()
+    }
+    pub fn quality(&self) -> Option<&str> {
+        self.quality.as_deref()
+    }
+    pub fn codec(&self) -> Option<&str> {
+        self.codec.as_deref()
+    }
+    pub fn audio(&self) -> Option<&str> {
+        self.audio.as_deref()
+    }
+    pub fn group(&self) -> Option<&str> {
+        self.group.as_deref()
+    }
+    pub fn imdb_tag(&self) -> Option<&str> {
+        self.imdb.as_deref()
+    }
+    pub fn extended(&self) -> bool {
+        self.extended
+    }
+    pub fn hardcoded(&self) -> bool {
+        self.hardcoded
+    }
+    pub fn proper(&self) -> bool {
+        self.proper
+    }
+    pub fn repack(&self) -> bool {
+        self.repack
+    }
+    pub fn widescreen(&self) -> bool {
+        self.widescreen
+    }
+    pub fn unrated(&self) -> bool {
+        self.unrated
+    }
+    pub fn three_d(&self) -> bool {
+        self.three_d
+    }
+}
+
+impl FromStr for Metadata {
+    type Err = ErrorMatch;
+
+    fn from_str(name: &str) -> Result<Self, Self::Err> {
         let mut title_start = 0;
         let mut title_end = name.len();
 
@@ -233,56 +295,12 @@ impl Metadata {
             imdb,
         })
     }
+}
 
-    pub fn title(&self) -> &str {
-        &self.title
-    }
-    pub fn season(&self) -> Option<i32> {
-        self.season
-    }
-    pub fn episode(&self) -> Option<i32> {
-        self.episode
-    }
-    pub fn year(&self) -> Option<i32> {
-        self.year
-    }
-    pub fn resolution(&self) -> Option<&str> {
-        self.resolution.as_deref()
-    }
-    pub fn quality(&self) -> Option<&str> {
-        self.quality.as_deref()
-    }
-    pub fn codec(&self) -> Option<&str> {
-        self.codec.as_deref()
-    }
-    pub fn audio(&self) -> Option<&str> {
-        self.audio.as_deref()
-    }
-    pub fn group(&self) -> Option<&str> {
-        self.group.as_deref()
-    }
-    pub fn imdb_tag(&self) -> Option<&str> {
-        self.imdb.as_deref()
-    }
-    pub fn extended(&self) -> bool {
-        self.extended
-    }
-    pub fn hardcoded(&self) -> bool {
-        self.hardcoded
-    }
-    pub fn proper(&self) -> bool {
-        self.proper
-    }
-    pub fn repack(&self) -> bool {
-        self.repack
-    }
-    pub fn widescreen(&self) -> bool {
-        self.widescreen
-    }
-    pub fn unrated(&self) -> bool {
-        self.unrated
-    }
-    pub fn three_d(&self) -> bool {
-        self.three_d
+impl TryFrom<&str> for Metadata {
+    type Error = ErrorMatch;
+
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
+        Metadata::from_str(s)
     }
 }
