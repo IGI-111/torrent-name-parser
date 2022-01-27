@@ -129,6 +129,18 @@ impl Metadata {
     pub fn extension(&self) -> Option<&str> {
         self.extension.as_deref()
     }
+    pub fn is_show(&self) -> bool {
+        self.season.is_some()
+    }
+    pub fn is_special(&self) -> bool {
+        if let Some(season) = self.season {
+            // Recode if season is converted back  to string
+            if season < 1 {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 impl FromStr for Metadata {
