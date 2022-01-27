@@ -343,6 +343,12 @@ fn names() {
     assert_eq!(m.imdb_tag(), Some("tt1961324"));
     assert_eq!(m.title(), "Pokémon the Movie Black - Victini and Reshiram");
     assert_eq!(m.year(), Some(2011));
+    assert_eq!(m.extension(), None);
+
+    // Support Files with file extension: avi, mkv, mp4
+    let m = Metadata::from("Life.on.Mars.(US).S01E01.avi").unwrap();
+    assert_eq!(m.title(), "Life on Mars");
+    assert_eq!(m.extension(), Some("avi"));
 }
 
 #[cfg(test)]

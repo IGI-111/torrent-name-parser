@@ -26,6 +26,7 @@ pub struct Metadata {
     unrated: bool,
     three_d: bool,
     imdb: Option<String>,
+    extension: Option<String>,
 }
 
 fn check_pattern_and_extract<'a>(
@@ -125,6 +126,9 @@ impl Metadata {
     pub fn three_d(&self) -> bool {
         self.three_d
     }
+    pub fn extension(&self) -> Option<&str> {
+        self.extension.as_deref()
+    }
 }
 
 impl FromStr for Metadata {
@@ -217,6 +221,14 @@ impl FromStr for Metadata {
             |caps| caps.get(0).map(|m| m.as_str()),
         )
         .map(String::from);
+        let extension = check_pattern_and_extract(
+            &pattern::FILE_EXTENSION,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(1).map(|m| m.as_str()),
+        )
+        .map(String::from);
 
         let extended = check_pattern(&pattern::EXTENDED, name, &mut title_start, &mut title_end);
         let hardcoded = check_pattern(&pattern::HARDCODED, name, &mut title_start, &mut title_end);
@@ -238,6 +250,7 @@ impl FromStr for Metadata {
                 ("season", season.map(String::from)),
                 ("episode", episode.map(String::from)),
                 ("year", year.map(String::from)),
+                ("extension", extension.map(String::from)),
                 ("resolution", resolution),
                 ("quality", quality),
                 ("codec", codec),
@@ -293,6 +306,7 @@ impl FromStr for Metadata {
             unrated: unrated.is_some(),
             three_d: three_d.is_some(),
             imdb,
+            extension,
         })
     }
 }
