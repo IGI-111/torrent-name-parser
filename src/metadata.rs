@@ -146,13 +146,7 @@ impl Metadata {
         self.season.is_some()
     }
     pub fn is_special(&self) -> bool {
-        if let Some(season) = self.season {
-            // Recode if season is converted back  to string
-            if season < 1 {
-                return true;
-            }
-        }
-        false
+        self.season.map(|s| s < 1).unwrap_or(false)
     }
 }
 
