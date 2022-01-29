@@ -177,7 +177,6 @@ impl FromStr for Metadata {
             &mut title_end,
             |caps| {
                 caps.name("short")
-                    .or_else(|| caps.name("long"))
                     .or_else(|| caps.name("cross"))
                     .or_else(|| caps.name("dash"))
                     .map(|m| m.as_str())
