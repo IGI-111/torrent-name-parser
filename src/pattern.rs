@@ -91,7 +91,7 @@ lazy_static! {
     pub static ref SEASON: Pattern =
         regex!(r"(?i)s?(?P<short>\d+) ?[ex]|(season)(?:[^\d]|$)(?P<long>\d+)|s(?P<dash>\d+) - \d+");
     pub static ref EPISODE: Pattern = regex!(
-        r"(?i)e(?P<short>\d+)(?:[^\d]|$)|(episode)(?:[^\d]|$)(?P<long>\d+)|\d+x(?P<cross>\d+)|s\d+ - (?P<dash>\d+)"
+        r"(?i)(?:e|episode)[^.\d]?(?:(?P<short>\d+)(?:e(?P<last>\d+))?)|\d+x(?P<cross>\d+)|s\d+ - (?P<dash>\d+)"
     );
     pub static ref FILE_EXTENSION: Pattern =
         regex!(r"(?:\.)(?P<extension>[a-z]{2,4}(?:\d)?|m4v|3gp|h26[45])$");
