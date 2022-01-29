@@ -133,6 +133,9 @@ impl Metadata {
     pub fn extension(&self) -> Option<&str> {
         self.extension.as_deref()
     }
+    pub fn is_multi_episode(&self) -> bool {
+        self.last_episode.is_some()
+    }
 }
 
 impl FromStr for Metadata {
@@ -141,6 +144,7 @@ impl FromStr for Metadata {
     fn from_str(name: &str) -> Result<Self, Self::Err> {
         let mut title_start = 0;
         let mut title_end = name.len();
+        let mut last_episode: Option<&str> = None;
 
         let season = check_pattern_and_extract(
             &pattern::SEASON,
@@ -167,14 +171,16 @@ impl FromStr for Metadata {
                     .map(|m| m.as_str())
             },
         );
-        let last_episode = check_pattern_and_extract(
-            &pattern::EPISODE,
-            name,
-            &mut title_start,
-            &mut title_end,
-            |caps| caps.name("last").map(|m| m.as_str()),
-        );
-
+        // Only look for a second episode if one was found prevkously.
+        if let Some(_episode) = episode {
+            last_episode = check_pattern_and_extract(
+                &pattern::SECOND_EPISODE,
+                name,
+                &mut title_start,
+                &mut title_end,
+                |caps| caps.get(1).map(|m| m.as_str()),
+            );
+        }
         let year = check_pattern_and_extract(
             &pattern::YEAR,
             name,
