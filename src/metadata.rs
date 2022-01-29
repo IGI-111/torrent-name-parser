@@ -12,6 +12,7 @@ pub struct Metadata {
     title: String,
     season: Option<i32>,
     episode: Option<i32>,
+    last_episode: Option<i32>,
     year: Option<i32>,
     resolution: Option<String>,
     quality: Option<String>,
@@ -83,6 +84,9 @@ impl Metadata {
     }
     pub fn episode(&self) -> Option<i32> {
         self.episode
+    }
+    pub fn last_episode(&self) -> Option<i32> {
+        self.last_episode
     }
     pub fn year(&self) -> Option<i32> {
         self.year
@@ -162,6 +166,13 @@ impl FromStr for Metadata {
                     .or_else(|| caps.name("dash"))
                     .map(|m| m.as_str())
             },
+        );
+        let last_episode = check_pattern_and_extract(
+            &pattern::EPISODE,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.name("last").map(|m| m.as_str()),
         );
 
         let year = check_pattern_and_extract(
@@ -248,6 +259,7 @@ impl FromStr for Metadata {
             return Err(ErrorMatch::new(vec![
                 ("season", season.map(String::from)),
                 ("episode", episode.map(String::from)),
+                ("last_episode", last_episode.map(String::from)),
                 ("year", year.map(String::from)),
                 ("extension", extension.map(String::from)),
                 ("resolution", resolution),
@@ -291,6 +303,7 @@ impl FromStr for Metadata {
             title,
             season: season.map(|s| s.parse().unwrap()),
             episode: episode.map(|s| s.parse().unwrap()),
+            last_episode: last_episode.map(|s| s.parse().unwrap()),
             year: year.map(|s| s.parse().unwrap()),
             resolution,
             quality,
