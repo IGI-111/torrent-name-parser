@@ -59,6 +59,7 @@ fn names() {
     let m = Metadata::from("the.expanse.s01e09e10.1080p.bluray.x264-rovers").unwrap();
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(9));
+    assert_eq!(m.last_episode(), Some(10));
     assert_eq!(m.year(), None);
     assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "the expanse");
