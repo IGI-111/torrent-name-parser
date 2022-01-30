@@ -98,6 +98,25 @@ impl Metadata {
     pub fn episode(&self) -> Option<i32> {
         self.episode
     }
+    ///```
+    /// # use torrent_name_parser::Metadata;
+    ///
+    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.episode(), Some(1));
+    ///    assert_eq!(m.last_episode(), None);
+    /// }
+    ///
+    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.episode(), Some(1));
+    ///    assert_eq!(m.last_episode(), Some(2));
+    /// }
+    ///
+    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02E03.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.is_multi_episode(), true);
+    ///    assert_eq!(m.episode(), Some(1));
+    ///    assert_eq!(m.last_episode(), Some(3));
+    /// }
+    ///```
     pub fn last_episode(&self) -> Option<i32> {
         self.last_episode
     }
@@ -152,6 +171,28 @@ impl Metadata {
     pub fn is_special(&self) -> bool {
         self.season.map(|s| s < 1).unwrap_or(false)
     }
+    /// Returns true the number of episodes is greater than one.
+    ///
+    ///```
+    /// # use torrent_name_parser::Metadata;
+    ///
+    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.is_multi_episode(), false);
+    ///    assert_eq!(m.episode(), Some(1));
+    /// }
+    ///
+    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.is_multi_episode(), true);
+    ///    assert_eq!(m.episode(), Some(1));
+    ///    assert_eq!(m.last_episode(), Some(2));
+    /// }
+    ///
+    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02E03.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.is_multi_episode(), true);
+    ///    assert_eq!(m.episode(), Some(1));
+    ///    assert_eq!(m.last_episode(), Some(3));
+    /// }
+    ///```
     pub fn is_multi_episode(&self) -> bool {
         self.last_episode.is_some()
     }
@@ -190,10 +231,10 @@ impl FromStr for Metadata {
                     .map(|m| m.as_str())
             },
         );
-        // Only look for a second episode if one was found prevkously.
+        // Only look for a last episode if one was found prevkously.
         if let Some(_episode) = episode {
             last_episode = check_pattern_and_extract(
-                &pattern::SECOND_EPISODE,
+                &pattern::LAST_EPISODE,
                 name,
                 &mut title_start,
                 &mut title_end,
