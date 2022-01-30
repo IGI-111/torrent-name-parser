@@ -450,6 +450,39 @@ mod parse {
         assert_eq!(m.title(), "Yes Day");
     }
 }
+
+#[cfg(test)]
+mod multi_episodes {
+    use super::*;
+
+    #[test]
+    fn single_episode() {
+        let m = Metadata::from("Doctor.who.(2003).S01E01.avi").unwrap();
+        assert_eq!(m.title(), "Doctor who");
+        assert_eq!(m.season(), Some(1));
+        assert_eq!(m.is_multi_episode(), false);
+        assert_eq!(m.last_episode(), None);
+        assert_eq!(m.episode(), Some(1));
+    }
+
+    #[test]
+    fn double_episode() {
+        let m = Metadata::from("the.expanse.s01e09e10.1080p.bluray.x264-rovers").unwrap();
+        assert_eq!(m.season(), Some(1));
+        assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episode(), Some(9));
+        assert_eq!(m.last_episode(), Some(10));
+    }
+
+    #[test]
+    fn triple_episode() {
+        let m = Metadata::from("the.expanse.s01e09e10e11.1080p.bluray.x264-rovers").unwrap();
+        assert_eq!(m.season(), Some(1));
+        assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episode(), Some(9));
+        assert_eq!(m.last_episode(), Some(11));
+    }
+}
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();
