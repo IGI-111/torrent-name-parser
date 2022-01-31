@@ -212,7 +212,9 @@ impl FromStr for Metadata {
                     .map(|m| m.as_str())
             },
         );
+        let episode_num = episode.map(|s| s.parse().unwrap());
         // Only look for a last episode if one was found prevkously.
+        let mut last_episode_num: Option<i32> = None;
         if let Some(_episode) = episode {
             last_episode = check_pattern_and_extract(
                 &pattern::LAST_EPISODE,
@@ -221,6 +223,13 @@ impl FromStr for Metadata {
                 &mut title_end,
                 |caps| caps.get(1).map(|m| m.as_str()),
             );
+            // Sanity check that last_episode does not contain a value or 0 (Zero)
+            if let Some(episode) = last_episode {
+                if episode.len() == 1 && episode.contains('0') {
+                    last_episode = None;
+                }
+            }
+            last_episode_num = last_episode.map(|s| s.parse().unwrap());
         }
         let year = check_pattern_and_extract(
             &pattern::YEAR,
@@ -349,8 +358,10 @@ impl FromStr for Metadata {
         Ok(Metadata {
             title,
             season: season.map(|s| s.parse().unwrap()),
-            episode: episode.map(|s| s.parse().unwrap()),
-            last_episode: last_episode.map(|s| s.parse().unwrap()),
+            //episode: episode.map(|s| s.parse().unwrap()),
+            episode: episode_num,
+            //last_episode: last_episode.map(|s| s.parse().unwrap()),
+            last_episode: last_episode_num,
             year: year.map(|s| s.parse().unwrap()),
             resolution,
             quality,
