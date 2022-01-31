@@ -423,31 +423,27 @@ mod extensions {
 }
 
 #[cfg(test)]
-mod parse {
-    use super::*;
+mod special {
+    use crate::metadata::Metadata;
+
     #[test]
-    fn parse_test_one() {
-        let m = "Yes Day (2021) [h265 WEBDL-1080p] [tt8521876]"
-            .parse::<Metadata>()
-            .unwrap();
-        assert_eq!(m.season(), None);
-        assert_eq!(m.episode(), None);
-        assert_eq!(m.imdb_tag(), Some("tt8521876"));
-        assert_eq!(m.year(), Some(2021));
-        assert_eq!(m.title(), "Yes Day");
+    fn special() {
+        // Support Files with file extension: avi, mkv, mp4
+        let m = Metadata::from("Life.on.Mars.(US).S01E01.avi").unwrap();
+        assert_eq!(m.title(), "Life on Mars");
+        assert_eq!(m.is_show(), true);
+        assert_eq!(m.is_special(), false);
     }
     #[test]
-    fn parse_test_two() {
-        let m: Metadata = "Yes Day (2021) [h265 WEBDL-1080p] [tt8521876]"
-            .parse()
-            .unwrap();
-        assert_eq!(m.season(), None);
-        assert_eq!(m.episode(), None);
-        assert_eq!(m.imdb_tag(), Some("tt8521876"));
-        assert_eq!(m.year(), Some(2021));
-        assert_eq!(m.title(), "Yes Day");
+    fn not_special() {
+        // detect special
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.avi").unwrap();
+        assert_eq!(m.title(), "Life on Mars");
+        assert_eq!(m.is_show(), true);
+        assert_eq!(m.is_special(), true);
     }
 }
+
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();

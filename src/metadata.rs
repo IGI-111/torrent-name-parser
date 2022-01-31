@@ -71,6 +71,19 @@ fn capture_to_string(caps: Option<Captures<'_>>) -> Option<String> {
 }
 
 impl Metadata {
+    ///```
+    /// use torrent_name_parser::Metadata;
+    ///
+    /// if let Ok(m) = Metadata::from("Doctor.Who.(2003).S01E01.avi") {
+    ///   assert_eq!(m.title(), "Doctor Who");
+    ///   assert_eq!(m.season(), Some(1));
+    ///   assert_eq!(m.extension(), Some("avi"));
+    ///   assert_eq!(m.is_show(), true);
+    ///   // Season is not 0 (zero) meaning it is not a Season Special. Eg: Christmas Special
+    ///   assert_eq!(m.is_special(), false);
+
+    /// }
+    ///```
     pub fn from(name: &str) -> Result<Self, ErrorMatch> {
         Metadata::from_str(name)
     }
@@ -128,6 +141,12 @@ impl Metadata {
     }
     pub fn extension(&self) -> Option<&str> {
         self.extension.as_deref()
+    }
+    pub fn is_show(&self) -> bool {
+        self.season.is_some()
+    }
+    pub fn is_special(&self) -> bool {
+        self.season.map(|s| s < 1).unwrap_or(false)
     }
 }
 
