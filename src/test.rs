@@ -390,6 +390,8 @@ fn names() {
     .unwrap();
     assert_eq!(m.season(), None);
     assert_eq!(m.episode(), None);
+    assert_eq!(m.last_episode(), None);
+    assert_eq!(m.multi_episode(), None);
     assert_eq!(m.imdb_tag(), Some("tt1961324"));
     assert_eq!(m.title(), "Pokémon the Movie Black - Victini and Reshiram");
     assert_eq!(m.year(), Some(2011));
@@ -463,6 +465,7 @@ mod multi_episodes {
         assert_eq!(m.is_multi_episode(), false);
         assert_eq!(m.last_episode(), None);
         assert_eq!(m.episode(), Some(1));
+        assert_eq!(m.multi_episode(), None);
     }
 
     #[test]
@@ -472,6 +475,17 @@ mod multi_episodes {
         assert_eq!(m.is_multi_episode(), true);
         assert_eq!(m.episode(), Some(9));
         assert_eq!(m.last_episode(), Some(10));
+        if let Some(multi_episodes) = m.multi_episode() {
+            assert_eq!(multi_episodes.len(), 2);
+            assert_eq!(multi_episodes[0], 9);
+            assert_eq!(multi_episodes[1], 10);
+        }
+        let episodes = m.multi_episode().unwrap();
+        let mut first_episode = m.episode().unwrap();
+        for i in episodes {
+            assert_eq!(*i, first_episode);
+            first_episode = first_episode + 1;
+        }
     }
 
     #[test]
@@ -481,6 +495,12 @@ mod multi_episodes {
         assert_eq!(m.is_multi_episode(), true);
         assert_eq!(m.episode(), Some(9));
         assert_eq!(m.last_episode(), Some(11));
+        if let Some(multi_episodes) = m.multi_episode() {
+            assert_eq!(multi_episodes.len(), 3);
+            assert_eq!(m.multi_episode().unwrap()[0], 9);
+            assert_eq!(m.multi_episode().unwrap()[1], 10);
+            assert_eq!(m.multi_episode().unwrap()[2], 11);
+        }
     }
 
     #[test]
@@ -490,6 +510,12 @@ mod multi_episodes {
         assert_eq!(m.is_multi_episode(), true);
         assert_eq!(m.episode(), Some(9));
         assert_eq!(m.last_episode(), Some(11));
+        if let Some(multi_episodes) = m.multi_episode() {
+            assert_eq!(multi_episodes.len(), 3);
+            assert_eq!(m.multi_episode().unwrap()[0], 9);
+            assert_eq!(m.multi_episode().unwrap()[1], 10);
+            assert_eq!(m.multi_episode().unwrap()[2], 11);
+        }
     }
     #[test]
     fn last_episode_zero() {

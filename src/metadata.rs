@@ -13,6 +13,7 @@ pub struct Metadata {
     season: Option<i32>,
     episode: Option<i32>,
     last_episode: Option<i32>,
+    multi_episode: Option<Vec<i32>>,
     year: Option<i32>,
     resolution: Option<String>,
     quality: Option<String>,
@@ -177,6 +178,9 @@ impl Metadata {
     pub fn is_multi_episode(&self) -> bool {
         self.last_episode.is_some()
     }
+    pub fn multi_episode(&self) -> Option<&Vec<i32>> {
+        self.multi_episode.as_ref()
+    }
 }
 
 impl FromStr for Metadata {
@@ -186,6 +190,7 @@ impl FromStr for Metadata {
         let mut title_start = 0;
         let mut title_end = name.len();
         let mut last_episode: Option<&str> = None;
+        let mut multi_episode: Option<Vec<i32>> = None;
 
         let season = check_pattern_and_extract(
             &pattern::SEASON,
@@ -215,7 +220,7 @@ impl FromStr for Metadata {
         let episode_num = episode.map(|s| s.parse().unwrap());
         // Only look for a last episode if one was found prevkously.
         let mut last_episode_num: Option<i32> = None;
-        if let Some(_episode) = episode {
+        if let Some(first_episode) = episode {
             last_episode = check_pattern_and_extract(
                 &pattern::LAST_EPISODE,
                 name,
@@ -224,9 +229,16 @@ impl FromStr for Metadata {
                 |caps| caps.get(1).map(|m| m.as_str()),
             );
             // Sanity check that last_episode does not contain a value or 0 (Zero)
-            if let Some(episode) = last_episode {
-                if episode.len() == 1 && episode.contains('0') {
+            if let Some(l_episode) = last_episode {
+                if l_episode.len() == 1 && l_episode.contains('0') {
                     last_episode = None;
+                } else {
+                    // Populate multi_episode
+                    let mut episode_numbers: Vec<i32> = Vec::new();
+                    for i in first_episode.parse().unwrap()..=l_episode.parse().unwrap() {
+                        episode_numbers.push(i);
+                    }
+                    multi_episode = Some(episode_numbers);
                 }
             }
             last_episode_num = last_episode.map(|s| s.parse().unwrap());
@@ -362,6 +374,7 @@ impl FromStr for Metadata {
             episode: episode_num,
             //last_episode: last_episode.map(|s| s.parse().unwrap()),
             last_episode: last_episode_num,
+            multi_episode,
             year: year.map(|s| s.parse().unwrap()),
             resolution,
             quality,
