@@ -12,7 +12,6 @@ pub struct Metadata {
     title: String,
     season: Option<i32>,
     episode: Option<i32>,
-    last_episode: Option<i32>,
     multi_episode: Option<Vec<i32>>,
     year: Option<i32>,
     resolution: Option<String>,
@@ -99,27 +98,31 @@ impl Metadata {
     pub fn episode(&self) -> Option<i32> {
         self.episode
     }
+    /// Returns true the number of episodes is greater than one.
+    ///
     ///```
     /// # use torrent_name_parser::Metadata;
     ///
     /// if let Ok(m) = "Life.on.Mars.(UK).S01E1.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.is_multi_episode(), false);
     ///    assert_eq!(m.episode(), Some(1));
-    ///    assert_eq!(m.last_episode(), None);
     /// }
     ///
     /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02.avi".parse::<Metadata>() {
+    ///    assert_eq!(m.is_multi_episode(), true);
     ///    assert_eq!(m.episode(), Some(1));
-    ///    assert_eq!(m.last_episode(), Some(2));
     /// }
     ///
     /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02E03.avi".parse::<Metadata>() {
     ///    assert_eq!(m.is_multi_episode(), true);
     ///    assert_eq!(m.episode(), Some(1));
-    ///    assert_eq!(m.last_episode(), Some(3));
     /// }
     ///```
-    pub fn last_episode(&self) -> Option<i32> {
-        self.last_episode
+    pub fn is_multi_episode(&self) -> bool {
+        self.multi_episode.is_some()
+    }
+    pub fn episodes(&self) -> Option<&Vec<i32>> {
+        self.multi_episode.as_ref()
     }
     pub fn year(&self) -> Option<i32> {
         self.year
@@ -172,34 +175,6 @@ impl Metadata {
     pub fn is_special(&self) -> bool {
         self.season.map(|s| s < 1).unwrap_or(false)
     }
-    /// Returns true the number of episodes is greater than one.
-    ///
-    ///```
-    /// # use torrent_name_parser::Metadata;
-    ///
-    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1.avi".parse::<Metadata>() {
-    ///    assert_eq!(m.is_multi_episode(), false);
-    ///    assert_eq!(m.episode(), Some(1));
-    /// }
-    ///
-    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02.avi".parse::<Metadata>() {
-    ///    assert_eq!(m.is_multi_episode(), true);
-    ///    assert_eq!(m.episode(), Some(1));
-    ///    assert_eq!(m.last_episode(), Some(2));
-    /// }
-    ///
-    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02E03.avi".parse::<Metadata>() {
-    ///    assert_eq!(m.is_multi_episode(), true);
-    ///    assert_eq!(m.episode(), Some(1));
-    ///    assert_eq!(m.last_episode(), Some(3));
-    /// }
-    ///```
-    pub fn is_multi_episode(&self) -> bool {
-        self.last_episode.is_some()
-    }
-    pub fn multi_episode(&self) -> Option<&Vec<i32>> {
-        self.multi_episode.as_ref()
-    }
 }
 
 impl FromStr for Metadata {
@@ -208,8 +183,9 @@ impl FromStr for Metadata {
     fn from_str(name: &str) -> Result<Self, Self::Err> {
         let mut title_start = 0;
         let mut title_end = name.len();
-        let mut last_episode: Option<&str> = None;
-        let mut multi_episode: Option<Vec<i32>> = None;
+        let mut multi_episode: Option<_> = None;
+        let mut episodes: Vec<i32> = Vec::new();
+        let interim_last_episode;
 
         let season = check_pattern_and_extract(
             &pattern::SEASON,
@@ -236,31 +212,35 @@ impl FromStr for Metadata {
                     .map(|m| m.as_str())
             },
         );
-        let episode_num = episode.map(|s| s.parse().unwrap());
-        // Only look for a last episode if one was found prevkously.
-        let mut last_episode_num: Option<i32> = None;
+        // Only look for a last episode if pattern::EPISODE returned a value.
         if let Some(first_episode) = episode {
-            last_episode = check_pattern_and_extract(
+            interim_last_episode = check_pattern_and_extract(
                 &pattern::LAST_EPISODE,
                 name,
                 &mut title_start,
                 &mut title_end,
                 |caps| caps.get(1).map(|m| m.as_str()),
             );
-            // Sanity check that last_episode does not contain a value or 0 (Zero)
-            if let Some(l_episode) = last_episode {
-                if l_episode.len() == 1 && l_episode.contains('0') {
-                    last_episode = None;
-                } else {
-                    // Populate multi_episode
-                    let mut episode_numbers: Vec<i32> = Vec::new();
-                    for i in first_episode.parse().unwrap()..=l_episode.parse().unwrap() {
-                        episode_numbers.push(i);
+            multi_episode = match interim_last_episode {
+                Some(last_episode) => {
+                    // Sanity check that last_episode does not contain a value or 0 (Zero)
+                    if last_episode.len() == 1 && last_episode.contains('0') {
+                        // Treat a string ending with '0' (zero) as invalid and skip further work
+                    } else {
+                        // Populate Vec with each episode number
+                        for number_of_episode in
+                            first_episode.parse().unwrap()..=last_episode.parse().unwrap()
+                        {
+                            episodes.push(number_of_episode);
+                        }
                     }
-                    multi_episode = Some(episode_numbers);
+                    match !episodes.is_empty() {
+                        true => Some(episodes),
+                        false => None,
+                    }
                 }
+                None => None,
             }
-            last_episode_num = last_episode.map(|s| s.parse().unwrap());
         }
         let year = check_pattern_and_extract(
             &pattern::YEAR,
@@ -346,7 +326,6 @@ impl FromStr for Metadata {
             return Err(ErrorMatch::new(vec![
                 ("season", season.map(String::from)),
                 ("episode", episode.map(String::from)),
-                ("last_episode", last_episode.map(String::from)),
                 ("year", year.map(String::from)),
                 ("extension", extension.map(String::from)),
                 ("resolution", resolution),
@@ -389,10 +368,7 @@ impl FromStr for Metadata {
         Ok(Metadata {
             title,
             season: season.map(|s| s.parse().unwrap()),
-            //episode: episode.map(|s| s.parse().unwrap()),
-            episode: episode_num,
-            //last_episode: last_episode.map(|s| s.parse().unwrap()),
-            last_episode: last_episode_num,
+            episode: episode.map(|s| s.parse().unwrap()),
             multi_episode,
             year: year.map(|s| s.parse().unwrap()),
             resolution,
