@@ -37,7 +37,7 @@ pub fn main() {
         .parse()
         .unwrap();
     print!("{} contains ", m4.title());
-    if let Some(episodes) = m4.multi_episode() {
+    if let Some(episodes) = m4.episodes() {
         for i in 0..episodes.len() {
             print!("Episode {}, ", episodes[i]);
         }
@@ -48,8 +48,8 @@ pub fn main() {
         .parse()
         .unwrap();
     print!("{} contains ", m5.title());
-    if let Some(_) = m5.multi_episode() {
-        for i in m5.episode().unwrap()..=m5.last_episode().unwrap() {
+    if let Some(episodes) = m5.episodes() {
+        for i in episodes.iter() {
             print!("Episode {}, ", i);
         }
     }
