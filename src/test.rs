@@ -485,7 +485,13 @@ mod multi_episodes {
         let m = Metadata::from("the.expanse.s01e09e11.1080p.bluray.x264-rovers").unwrap();
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episodes().len(), 3);
         assert_eq!(m.episode(), Some(9));
+        let mut current_episode = m.episode().unwrap();
+        for episode in m.episodes().iter() {
+            assert_eq!(*episode, current_episode);
+            current_episode = current_episode + 1;
+        }
     }
 
     #[test]
@@ -493,7 +499,13 @@ mod multi_episodes {
         let m = Metadata::from("the.expanse.s01e09e10e11.1080p.bluray.x264-rovers").unwrap();
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episodes().len(), 3);
         assert_eq!(m.episode(), Some(9));
+        let mut current_episode = m.episode().unwrap();
+        for episode in m.episodes().iter() {
+            assert_eq!(*episode, current_episode);
+            current_episode = current_episode + 1;
+        }
     }
     #[test]
     fn last_episode_zero() {
@@ -501,6 +513,7 @@ mod multi_episodes {
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), false);
         assert_eq!(m.episode(), Some(9));
+        assert_eq!(m.episodes().len(), 0);
     }
 }
 #[test]
