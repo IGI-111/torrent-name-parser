@@ -457,7 +457,9 @@ mod multi_episodes {
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), false);
         assert_eq!(m.episode(), Some(1));
-        assert_eq!(m.episodes().len(), 0);
+        assert_eq!(m.episodes().len(), 1);
+        assert_eq!(m.first_episode(), None);
+        assert_eq!(m.last_episode(), None);
     }
 
     #[test]
@@ -475,9 +477,11 @@ mod multi_episodes {
         let episodes = m.episodes();
         let mut first_episode = m.episode().unwrap();
         for i in episodes {
-            assert_eq!(i, first_episode);
-            first_episode = first_episode + 1;
+            assert_eq!(*i, first_episode);
+            first_episode += 1;
         }
+        assert_eq!(m.first_episode(), Some(&9));
+        assert_eq!(m.last_episode(), Some(&10));
     }
 
     #[test]
@@ -490,7 +494,7 @@ mod multi_episodes {
         let mut current_episode = m.episode().unwrap();
         for episode in m.episodes().iter() {
             assert_eq!(*episode, current_episode);
-            current_episode = current_episode + 1;
+            current_episode += 1;
         }
     }
 
@@ -504,7 +508,7 @@ mod multi_episodes {
         let mut current_episode = m.episode().unwrap();
         for episode in m.episodes().iter() {
             assert_eq!(*episode, current_episode);
-            current_episode = current_episode + 1;
+            current_episode += 1;
         }
     }
     #[test]
@@ -513,7 +517,7 @@ mod multi_episodes {
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), false);
         assert_eq!(m.episode(), Some(9));
-        assert_eq!(m.episodes().len(), 0);
+        assert_eq!(m.episodes().len(), 1);
     }
 }
 #[test]

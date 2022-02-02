@@ -121,15 +121,35 @@ impl Metadata {
     ///    let mut current_episode = m.episode().unwrap();
     ///    for episode in m.episodes().iter() {
     ///      assert_eq!(*episode, current_episode);
-    ///      current_episode = current_episode + 1;
+    ///      current_episode += 1;
     ///    }
     /// }
     ///```
     pub fn is_multi_episode(&self) -> bool {
-        !self.episodes.is_empty()
+        self.episodes.len() > 1
     }
-    pub fn episodes(&self) -> Vec<i32> {
-        self.episodes.clone()
+    /// Contains a `Vec` of episode numbers detected.
+    /// # Examples:
+    /// No matches -> `[]`  
+    /// `E01` -> `[1]`  
+    /// `E03e04` -> `[3,4]`  
+    /// `e03E07` -> `[3,4,5,6,7]`  
+    pub fn episodes(&self) -> &Vec<i32> {
+        &self.episodes
+    }
+    /// A convenience method to access the first Episode
+    pub fn first_episode(&self) -> Option<&i32> {
+        match self.episodes.len() > 1 {
+            true => Some(&self.episodes[0]),
+            false => None,
+        }
+    }
+    /// A convenience method to access the last Episode
+    pub fn last_episode(&self) -> Option<&i32> {
+        match self.episodes.len() > 1 {
+            true => self.episodes.last(),
+            false => None,
+        }
     }
     pub fn year(&self) -> Option<i32> {
         self.year
@@ -220,6 +240,7 @@ impl FromStr for Metadata {
         );
         // Only look for a last episode if pattern::EPISODE returned a value.
         if let Some(first_episode) = episode {
+            episodes.push(first_episode.parse().unwrap());
             interim_last_episode = check_pattern_and_extract(
                 &pattern::LAST_EPISODE,
                 name,
@@ -234,8 +255,8 @@ impl FromStr for Metadata {
                         // Treat a string ending with '0' (zero) as invalid and skip further work
                     } else {
                         // Populate Vec with each episode number
-                        for number_of_episode in
-                            first_episode.parse().unwrap()..=last_episode.parse().unwrap()
+                        for number_of_episode in first_episode.parse::<i32>().unwrap() + 1
+                            ..=last_episode.parse().unwrap()
                         {
                             episodes.push(number_of_episode);
                         }
