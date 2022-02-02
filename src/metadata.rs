@@ -12,7 +12,7 @@ pub struct Metadata {
     title: String,
     season: Option<i32>,
     episode: Option<i32>,
-    multi_episode: Option<Vec<i32>>,
+    episodes: Vec<i32>,
     year: Option<i32>,
     resolution: Option<String>,
     quality: Option<String>,
@@ -111,18 +111,25 @@ impl Metadata {
     /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02.avi".parse::<Metadata>() {
     ///    assert_eq!(m.is_multi_episode(), true);
     ///    assert_eq!(m.episode(), Some(1));
+    ///    let episodes = m.episodes();
+    ///    assert_eq!(*episodes.last().unwrap(), 2);
     /// }
     ///
     /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02E03.avi".parse::<Metadata>() {
     ///    assert_eq!(m.is_multi_episode(), true);
     ///    assert_eq!(m.episode(), Some(1));
+    ///    let mut current_episode = m.episode().unwrap();
+    ///    for episode in m.episodes().iter() {
+    ///      assert_eq!(*episode, current_episode);
+    ///      current_episode = current_episode + 1;
+    ///    }
     /// }
     ///```
     pub fn is_multi_episode(&self) -> bool {
-        self.multi_episode.is_some()
+        !self.episodes.is_empty()
     }
-    pub fn episodes(&self) -> Option<&Vec<i32>> {
-        self.multi_episode.as_ref()
+    pub fn episodes(&self) -> Vec<i32> {
+        self.episodes.clone()
     }
     pub fn year(&self) -> Option<i32> {
         self.year
@@ -183,7 +190,6 @@ impl FromStr for Metadata {
     fn from_str(name: &str) -> Result<Self, Self::Err> {
         let mut title_start = 0;
         let mut title_end = name.len();
-        let mut multi_episode: Option<_> = None;
         let mut episodes: Vec<i32> = Vec::new();
         let interim_last_episode;
 
@@ -221,7 +227,7 @@ impl FromStr for Metadata {
                 &mut title_end,
                 |caps| caps.get(1).map(|m| m.as_str()),
             );
-            multi_episode = match interim_last_episode {
+            match interim_last_episode {
                 Some(last_episode) => {
                     // Sanity check that last_episode does not contain a value or 0 (Zero)
                     if last_episode.len() == 1 && last_episode.contains('0') {
@@ -234,14 +240,10 @@ impl FromStr for Metadata {
                             episodes.push(number_of_episode);
                         }
                     }
-                    match !episodes.is_empty() {
-                        true => Some(episodes),
-                        false => None,
-                    }
                 }
-                None => None,
-            }
-        }
+                None => {}
+            } // End match interim_last_episode
+        } // End Some(first_episode)
         let year = check_pattern_and_extract(
             &pattern::YEAR,
             name,
@@ -369,7 +371,7 @@ impl FromStr for Metadata {
             title,
             season: season.map(|s| s.parse().unwrap()),
             episode: episode.map(|s| s.parse().unwrap()),
-            multi_episode,
+            episodes,
             year: year.map(|s| s.parse().unwrap()),
             resolution,
             quality,

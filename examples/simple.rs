@@ -33,25 +33,12 @@ pub fn main() {
         m3.episode().unwrap()
     );
 
-    let m4: Metadata = "Marvels Agents of S.H.I.E.L.D. S02E06e07 HDTV x264-KILLERS[ettv]"
+    let m4: Metadata = "Marvels Agents of S.H.I.E.L.D. S02E06e07E08 HDTV x264-KILLERS[ettv]"
         .parse()
         .unwrap();
     print!("{} contains ", m4.title());
-    if let Some(episodes) = m4.episodes() {
-        for i in 0..episodes.len() {
-            print!("Episode {}, ", episodes[i]);
-        }
-    }
-    println!("");
-
-    let m5: Metadata = "Marvels Agents of S.H.I.E.L.D. S02E06e07E08 HDTV x264-KILLERS[ettv]"
-        .parse()
-        .unwrap();
-    print!("{} contains ", m5.title());
-    if let Some(episodes) = m5.episodes() {
-        for i in episodes.iter() {
-            print!("Episode {}, ", i);
-        }
+    for i in m4.episodes().iter() {
+        print!("Episode {}, ", i);
     }
     println!("");
 }

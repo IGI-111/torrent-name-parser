@@ -59,6 +59,8 @@ fn names() {
     let m = Metadata::from("the.expanse.s01e09e10.1080p.bluray.x264-rovers").unwrap();
     assert_eq!(m.season(), Some(1));
     assert_eq!(m.episode(), Some(9));
+    assert_eq!(m.year(), None);
+    assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.is_multi_episode(), true);
     assert_eq!(m.title(), "the expanse");
     assert_eq!(m.extension(), None);
@@ -387,7 +389,7 @@ fn names() {
     .unwrap();
     assert_eq!(m.season(), None);
     assert_eq!(m.episode(), None);
-    assert_eq!(m.episodes(), None);
+    assert_eq!(m.episodes().len(), 0);
     assert_eq!(m.imdb_tag(), Some("tt1961324"));
     assert_eq!(m.title(), "Pokémon the Movie Black - Victini and Reshiram");
     assert_eq!(m.year(), Some(2011));
@@ -455,7 +457,7 @@ mod multi_episodes {
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), false);
         assert_eq!(m.episode(), Some(1));
-        assert_eq!(m.episodes(), None);
+        assert_eq!(m.episodes().len(), 0);
     }
 
     #[test]
@@ -464,15 +466,16 @@ mod multi_episodes {
         assert_eq!(m.season(), Some(1));
         assert_eq!(m.is_multi_episode(), true);
         assert_eq!(m.episode(), Some(9));
-        if let Some(multi_episodes) = m.episodes() {
-            assert_eq!(multi_episodes.len(), 2);
-            assert_eq!(multi_episodes[0], 9);
-            assert_eq!(multi_episodes[1], 10);
+        if m.episodes().len() != 0 {
+            let episodes = m.episodes();
+            assert_eq!(episodes.len(), 2);
+            assert_eq!(episodes[0], 9);
+            assert_eq!(episodes[1], 10);
         }
-        let episodes = m.episodes().unwrap();
+        let episodes = m.episodes();
         let mut first_episode = m.episode().unwrap();
         for i in episodes {
-            assert_eq!(*i, first_episode);
+            assert_eq!(i, first_episode);
             first_episode = first_episode + 1;
         }
     }
