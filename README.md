@@ -14,3 +14,6 @@ Including but not limited to:
 * Resolution
 * Quality
 * IMDb tag
+
+
+See: [CHANGELOG](CHANGELOG.md)

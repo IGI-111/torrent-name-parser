@@ -458,8 +458,9 @@ mod multi_episodes {
         assert_eq!(m.is_multi_episode(), false);
         assert_eq!(m.episode(), Some(1));
         assert_eq!(m.episodes().len(), 1);
-        assert_eq!(m.first_episode(), None);
-        assert_eq!(m.last_episode(), None);
+        // first amd last reference the same value when only a single episode
+        assert_eq!(m.first_episode(), Some(&1));
+        assert_eq!(m.last_episode(), Some(&1));
     }
 
     #[test]

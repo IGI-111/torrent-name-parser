@@ -139,17 +139,14 @@ impl Metadata {
     }
     /// A convenience method to access the first Episode
     pub fn first_episode(&self) -> Option<&i32> {
-        match self.episodes.len() > 1 {
-            true => Some(&self.episodes[0]),
-            false => None,
+        match self.episodes.is_empty() {
+            false => Some(&self.episodes[0]),
+            true => None,
         }
     }
     /// A convenience method to access the last Episode
     pub fn last_episode(&self) -> Option<&i32> {
-        match self.episodes.len() > 1 {
-            true => self.episodes.last(),
-            false => None,
-        }
+        self.episodes.last()
     }
     pub fn year(&self) -> Option<i32> {
         self.year
