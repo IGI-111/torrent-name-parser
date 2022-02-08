@@ -486,6 +486,71 @@ mod multi_episodes {
     }
 
     #[test]
+    fn double_episode_dash_gap() {
+        let m = Metadata::from("the.expanse.s01e09-e10.1080p.bluray.x264-rovers").unwrap();
+        assert_eq!(m.season(), Some(1));
+        assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episode(), Some(9));
+        if m.episodes().len() != 0 {
+            let episodes = m.episodes();
+            assert_eq!(episodes.len(), 2);
+            assert_eq!(episodes[0], 9);
+            assert_eq!(episodes[1], 10);
+        }
+        let episodes = m.episodes();
+        let mut first_episode = m.episode().unwrap();
+        for i in episodes {
+            assert_eq!(*i, first_episode);
+            first_episode += 1;
+        }
+        assert_eq!(m.first_episode(), Some(&9));
+        assert_eq!(m.last_episode(), Some(&10));
+    }
+
+    #[test]
+    fn double_episode_dash_spaces_gap() {
+        let m = Metadata::from("the.expanse.s01e09 - e10.1080p.bluray.x264-rovers").unwrap();
+        assert_eq!(m.season(), Some(1));
+        assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episode(), Some(9));
+        if m.episodes().len() != 0 {
+            let episodes = m.episodes();
+            assert_eq!(episodes.len(), 2);
+            assert_eq!(episodes[0], 9);
+            assert_eq!(episodes[1], 10);
+        }
+        let episodes = m.episodes();
+        let mut first_episode = m.episode().unwrap();
+        for i in episodes {
+            assert_eq!(*i, first_episode);
+            first_episode += 1;
+        }
+        assert_eq!(m.first_episode(), Some(&9));
+        assert_eq!(m.last_episode(), Some(&10));
+    }
+
+    #[test]
+    fn double_episode_space_gap() {
+        let m = Metadata::from("the.expanse.s01e09 e10.1080p.bluray.x264-rovers").unwrap();
+        assert_eq!(m.season(), Some(1));
+        assert_eq!(m.is_multi_episode(), true);
+        assert_eq!(m.episode(), Some(9));
+        if m.episodes().len() != 0 {
+            let episodes = m.episodes();
+            assert_eq!(episodes.len(), 2);
+            assert_eq!(episodes[0], 9);
+            assert_eq!(episodes[1], 10);
+        }
+        let episodes = m.episodes();
+        let mut first_episode = m.episode().unwrap();
+        for i in episodes {
+            assert_eq!(*i, first_episode);
+            first_episode += 1;
+        }
+        assert_eq!(m.first_episode(), Some(&9));
+        assert_eq!(m.last_episode(), Some(&10));
+    }
+    #[test]
     fn double_episode_with_gap() {
         let m = Metadata::from("the.expanse.s01e09e11.1080p.bluray.x264-rovers").unwrap();
         assert_eq!(m.season(), Some(1));
