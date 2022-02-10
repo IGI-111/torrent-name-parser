@@ -22,7 +22,7 @@ pub fn main() {
     print!("Title: {}, ", m.title());
     if m.is_show() {
         print!("Season: {}, ", m.season().unwrap());
-        if m.is_multi_episode() {
+        if m.episodes().len() > 1 {
             print!("Episodes: ");
             for episode in m.episodes().iter() {
                 print!("{}, ", episode);

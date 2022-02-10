@@ -98,36 +98,6 @@ impl Metadata {
     pub fn episode(&self) -> Option<i32> {
         self.episode
     }
-    /// Returns true the number of episodes is greater than one.
-    ///
-    ///```
-    /// # use torrent_name_parser::Metadata;
-    ///
-    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1.avi".parse::<Metadata>() {
-    ///    assert_eq!(m.is_multi_episode(), false);
-    ///    assert_eq!(m.episode(), Some(1));
-    /// }
-    ///
-    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02.avi".parse::<Metadata>() {
-    ///    assert_eq!(m.is_multi_episode(), true);
-    ///    assert_eq!(m.episode(), Some(1));
-    ///    let episodes = m.episodes();
-    ///    assert_eq!(*episodes.last().unwrap(), 2);
-    /// }
-    ///
-    /// if let Ok(m) = "Life.on.Mars.(UK).S01E1E02E03.avi".parse::<Metadata>() {
-    ///    assert_eq!(m.is_multi_episode(), true);
-    ///    assert_eq!(m.episode(), Some(1));
-    ///    let mut current_episode = m.episode().unwrap();
-    ///    for episode in m.episodes().iter() {
-    ///      assert_eq!(*episode, current_episode);
-    ///      current_episode += 1;
-    ///    }
-    /// }
-    ///```
-    pub fn is_multi_episode(&self) -> bool {
-        self.episodes.len() > 1
-    }
     /// Contains a `Vec` of episode numbers detected.
     /// # Examples:
     /// No matches -> `[]`  
