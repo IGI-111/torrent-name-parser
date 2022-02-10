@@ -2,4 +2,3 @@
 =================
 
 - Add multi-episode support
-  - is_multi_episode()
