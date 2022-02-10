@@ -459,8 +459,6 @@ mod multi_episodes {
         assert_eq!(m.episode(), Some(1));
         assert_eq!(m.episodes().len(), 1);
         // first amd last reference the same value when only a single episode
-        assert_eq!(m.first_episode(), Some(&1));
-        assert_eq!(m.last_episode(), Some(&1));
     }
 
     #[test]
@@ -481,8 +479,6 @@ mod multi_episodes {
             assert_eq!(*i, first_episode);
             first_episode += 1;
         }
-        assert_eq!(m.first_episode(), Some(&9));
-        assert_eq!(m.last_episode(), Some(&10));
     }
 
     #[test]
@@ -503,8 +499,6 @@ mod multi_episodes {
             assert_eq!(*i, first_episode);
             first_episode += 1;
         }
-        assert_eq!(m.first_episode(), Some(&9));
-        assert_eq!(m.last_episode(), Some(&10));
     }
 
     #[test]
@@ -525,8 +519,6 @@ mod multi_episodes {
             assert_eq!(*i, first_episode);
             first_episode += 1;
         }
-        assert_eq!(m.first_episode(), Some(&9));
-        assert_eq!(m.last_episode(), Some(&10));
     }
 
     #[test]
@@ -547,8 +539,6 @@ mod multi_episodes {
             assert_eq!(*i, first_episode);
             first_episode += 1;
         }
-        assert_eq!(m.first_episode(), Some(&9));
-        assert_eq!(m.last_episode(), Some(&10));
     }
     #[test]
     fn double_episode_with_gap() {

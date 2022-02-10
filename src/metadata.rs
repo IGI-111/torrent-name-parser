@@ -137,17 +137,6 @@ impl Metadata {
     pub fn episodes(&self) -> &Vec<i32> {
         &self.episodes
     }
-    /// A convenience method to access the first Episode
-    pub fn first_episode(&self) -> Option<&i32> {
-        match self.episodes.is_empty() {
-            false => Some(&self.episodes[0]),
-            true => None,
-        }
-    }
-    /// A convenience method to access the last Episode
-    pub fn last_episode(&self) -> Option<&i32> {
-        self.episodes.last()
-    }
     pub fn year(&self) -> Option<i32> {
         self.year
     }
