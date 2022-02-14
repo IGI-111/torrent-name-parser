@@ -600,6 +600,11 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.dfxp").unwrap();
         assert_eq!(m.extension(), Some("dfxp"));
     }
+    #[test]
+    fn subtitle_dfxp_mixed_sizes() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.dFxP").unwrap();
+        assert_eq!(m.extension(), Some("dFxP"));
+    }
 }
 #[test]
 fn unicode() {

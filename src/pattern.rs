@@ -95,7 +95,7 @@ lazy_static! {
     );
     pub static ref LAST_EPISODE: Pattern = regex!(r"(?i)(?:e)(?:\d+)(?:[- ]+)?(?:e(?P<last>\d+))+");
     pub static ref FILE_EXTENSION: Pattern =
-        regex!(r"(?:\.)(?P<extension>[a-z]{2,4}(?:\d)?|m4v|3gp|h26[45])$");
+        regex!(r"(?i)(?:\.)(?P<extension>[a-z]{2,4}(?:\d)?|m4v|3gp|h26[45])$");
     pub static ref RESOLUTION: Pattern = regex!(r"((\d{3,4}p))[^M]");
     pub static ref QUALITY: Pattern = regex!(
         r"(?:PPV\.)?[HP]DTV|(?:HD)?CAM|B[rR]Rip|TS|(?:PPV )?WEB-?(DL)?(?: DVDRip)?|H[dD]Rip|DVDRip|DVDRiP|DVDRIP|CamRip|W[EB]B[rR]ip|[Bb]lu[Rr]ay|DvDScr|hdtv"
