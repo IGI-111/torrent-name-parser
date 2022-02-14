@@ -204,23 +204,20 @@ impl FromStr for Metadata {
                 &mut title_end,
                 |caps| caps.get(1).map(|m| m.as_str()),
             );
-            match interim_last_episode {
-                Some(last_episode) => {
-                    // Sanity check that last_episode does not contain a value or 0 (Zero)
-                    if last_episode.len() == 1 && last_episode.contains('0') {
-                        // Treat a string ending with '0' (zero) as invalid and skip further work
-                    } else {
-                        // Populate Vec with each episode number
-                        for number_of_episode in first_episode.parse::<i32>().unwrap() + 1
-                            ..=last_episode.parse().unwrap()
-                        {
-                            episodes.push(number_of_episode);
-                        }
+            if let Some(last_episode) = interim_last_episode {
+                // Sanity check that last_episode does not contain a value or 0 (Zero)
+                if last_episode.len() == 1 && last_episode.contains('0') {
+                    // Treat a string ending with '0' (zero) as invalid and skip further work
+                } else {
+                    // Populate Vec with each episode number
+                    for number_of_episode in
+                        first_episode.parse::<i32>().unwrap() + 1..=last_episode.parse().unwrap()
+                    {
+                        episodes.push(number_of_episode);
                     }
                 }
-                None => {}
-            } // End match interim_last_episode
-        } // End Some(first_episode)
+            }
+        }
         let year = check_pattern_and_extract(
             &pattern::YEAR,
             name,
