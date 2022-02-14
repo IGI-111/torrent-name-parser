@@ -444,6 +444,41 @@ mod special {
     }
 }
 
+#[cfg(test)]
+mod subtitle_extensions {
+    use crate::metadata::Metadata;
+
+    #[test]
+    fn subtitle_srt() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.srt").unwrap();
+        assert_eq!(m.extension(), Some("srt"));
+    }
+    #[test]
+    fn subtitle_ssa() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.ssa").unwrap();
+        assert_eq!(m.extension(), Some("ssa"));
+    }
+    #[test]
+    fn subtitle_svb() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.svb").unwrap();
+        assert_eq!(m.extension(), Some("svb"));
+    }
+    #[test]
+    fn subtitle_vtt() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.vtt").unwrap();
+        assert_eq!(m.extension(), Some("vtt"));
+    }
+    #[test]
+    fn subtitle_ttml() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.ttml").unwrap();
+        assert_eq!(m.extension(), Some("ttml"));
+    }
+    #[test]
+    fn subtitle_dfxp() {
+        let m = Metadata::from("Life.on.Mars.(US).S00E01.dfxp").unwrap();
+        assert_eq!(m.extension(), Some("dfxp"));
+    }
+}
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();
