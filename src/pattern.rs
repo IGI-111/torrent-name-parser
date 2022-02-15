@@ -105,6 +105,7 @@ lazy_static! {
     pub static ref AUDIO: Pattern =
         regex!(r"MP3|DD5\.?1|Dual[\- ]Audio|LiNE|DTS|AAC(?:\.?2\.0)?|AC3(?:\.5\.1)?");
     pub static ref GROUP: Pattern = regex!(r"(- ?([^ -]+(?:-=\{[^ -]+-?$)?))$");
+    pub static ref COUNTRY: Pattern = regex!(r"(?i)\W[(]?(\w{2})[)]?\.S\d");
     pub static ref REGION: Pattern = regex!(r"R\d");
     pub static ref EXTENDED: Pattern = regex!(r"EXTENDED");
     pub static ref HARDCODED: Pattern = regex!(r"HC");
