@@ -21,3 +21,10 @@ criterion-macro = "0.3.4"
 name = "benchmark"
 harness = false
 
+[[example]]
+name = "simple"
+path = "examples/simple.rs"
+
+[[example]]
+name = "multiple"
+path = "examples/multiple-episodes.rs"

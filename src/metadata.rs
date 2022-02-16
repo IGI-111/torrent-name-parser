@@ -12,6 +12,7 @@ pub struct Metadata {
     title: String,
     season: Option<i32>,
     episode: Option<i32>,
+    episodes: Vec<i32>,
     year: Option<i32>,
     resolution: Option<String>,
     quality: Option<String>,
@@ -97,6 +98,15 @@ impl Metadata {
     pub fn episode(&self) -> Option<i32> {
         self.episode
     }
+    /// Contains a `Vec` of episode numbers detected.
+    /// # Examples:
+    /// No matches -> `[]`  
+    /// `E01` -> `[1]`  
+    /// `E03e04` -> `[3,4]`  
+    /// `e03E07` -> `[3,4,5,6,7]`  
+    pub fn episodes(&self) -> &Vec<i32> {
+        &self.episodes
+    }
     pub fn year(&self) -> Option<i32> {
         self.year
     }
@@ -156,6 +166,8 @@ impl FromStr for Metadata {
     fn from_str(name: &str) -> Result<Self, Self::Err> {
         let mut title_start = 0;
         let mut title_end = name.len();
+        let mut episodes: Vec<i32> = Vec::new();
+        let interim_last_episode;
 
         let season = check_pattern_and_extract(
             &pattern::SEASON,
@@ -177,13 +189,35 @@ impl FromStr for Metadata {
             &mut title_end,
             |caps| {
                 caps.name("short")
-                    .or_else(|| caps.name("long"))
                     .or_else(|| caps.name("cross"))
                     .or_else(|| caps.name("dash"))
                     .map(|m| m.as_str())
             },
         );
-
+        // Only look for a last episode if pattern::EPISODE returned a value.
+        if let Some(first_episode) = episode {
+            episodes.push(first_episode.parse().unwrap());
+            interim_last_episode = check_pattern_and_extract(
+                &pattern::LAST_EPISODE,
+                name,
+                &mut title_start,
+                &mut title_end,
+                |caps| caps.get(1).map(|m| m.as_str()),
+            );
+            if let Some(last_episode) = interim_last_episode {
+                // Sanity check that last_episode does not contain a value or 0 (Zero)
+                if last_episode.len() == 1 && last_episode.contains('0') {
+                    // Treat a string ending with '0' (zero) as invalid and skip further work
+                } else {
+                    // Populate Vec with each episode number
+                    for number_of_episode in
+                        first_episode.parse::<i32>().unwrap() + 1..=last_episode.parse().unwrap()
+                    {
+                        episodes.push(number_of_episode);
+                    }
+                }
+            }
+        }
         let year = check_pattern_and_extract(
             &pattern::YEAR,
             name,
@@ -311,6 +345,7 @@ impl FromStr for Metadata {
             title,
             season: season.map(|s| s.parse().unwrap()),
             episode: episode.map(|s| s.parse().unwrap()),
+            episodes,
             year: year.map(|s| s.parse().unwrap()),
             resolution,
             quality,
