@@ -178,6 +178,7 @@ impl FromStr for Metadata {
                 caps.name("short")
                     .or_else(|| caps.name("long"))
                     .or_else(|| caps.name("dash"))
+                    .or_else(|| caps.name("collection"))
                     .map(|m| m.as_str())
             },
         );
