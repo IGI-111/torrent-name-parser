@@ -1,4 +1,6 @@
+pub mod extension;
 use crate::error::ErrorMatch;
+use crate::metadata::extension::FileExtension;
 use crate::pattern;
 use crate::pattern::Pattern;
 use regex::Captures;
@@ -27,7 +29,7 @@ pub struct Metadata {
     unrated: bool,
     three_d: bool,
     imdb: Option<String>,
-    extension: Option<String>,
+    extension: Option<FileExtension>,
 }
 
 fn check_pattern_and_extract<'a>(
@@ -74,11 +76,15 @@ fn capture_to_string(caps: Option<Captures<'_>>) -> Option<String> {
 impl Metadata {
     ///```
     /// use torrent_name_parser::Metadata;
+    /// use torrent_name_parser::{FileExtension, VideoExtension};
     ///
     /// if let Ok(m) = Metadata::from("Doctor.Who.(2003).S01E01.avi") {
     ///   assert_eq!(m.title(), "Doctor Who");
     ///   assert_eq!(m.season(), Some(1));
-    ///   assert_eq!(m.extension(), Some("avi"));
+    ///   assert_eq!(m.extension(), Some(&FileExtension::Video(VideoExtension::AVI)));
+    ///   assert_eq!(m.extension().unwrap().to_string(), "avi");
+    ///   assert_eq!(m.extension().unwrap().is_subtitle(), false);
+    ///   assert_eq!(m.extension().unwrap().is_video(), true);
     ///   assert_eq!(m.is_show(), true);
     ///   // Season is not 0 (zero) meaning it is not a Season Special. Eg: Christmas Special
     ///   assert_eq!(m.is_special(), false);
@@ -149,8 +155,8 @@ impl Metadata {
     pub fn three_d(&self) -> bool {
         self.three_d
     }
-    pub fn extension(&self) -> Option<&str> {
-        self.extension.as_deref()
+    pub fn extension(&self) -> Option<&FileExtension> {
+        self.extension.as_ref()
     }
     pub fn is_show(&self) -> bool {
         self.season.is_some()
@@ -361,7 +367,7 @@ impl FromStr for Metadata {
             unrated: unrated.is_some(),
             three_d: three_d.is_some(),
             imdb,
-            extension,
+            extension: extension.map(|s| s.parse::<FileExtension>().unwrap()),
         })
     }
 }
