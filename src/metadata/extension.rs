@@ -85,13 +85,12 @@ pub enum FileExtension {
 impl std::str::FromStr for FileExtension {
     type Err = ExtensionError;
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        match input.to_ascii_lowercase().as_str() {
-            "srt" | "ssa" | "svb" | "vtt" => {
-                Ok(FileExtension::Subtitle(SubtitleExtension::from_str(input)?))
-            }
-            "m4v" | "avi" => Ok(FileExtension::Video(VideoExtension::from_str(input)?)),
-            _ => Err(ExtensionError::Err(input.to_owned())),
-        }
+        let lowered = input.to_ascii_lowercase();
+        lowered
+            .parse()
+            .map(FileExtension::Subtitle)
+            .or_else(|_| lowered.parse().map(FileExtension::Video))
+            .map_err(|_| ExtensionError::Err(input.to_string()))
     }
 }
 
