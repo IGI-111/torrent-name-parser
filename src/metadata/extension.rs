@@ -88,8 +88,8 @@ impl std::str::FromStr for FileExtension {
         let lowered = input.to_ascii_lowercase();
         lowered
             .parse()
-            .map(FileExtension::Subtitle)
-            .or_else(|_| lowered.parse().map(FileExtension::Video))
+            .map(FileExtension::Video)
+            .or_else(|_| lowered.parse().map(FileExtension::Subtitle))
             .map_err(|_| ExtensionError::Err(input.to_string()))
     }
 }
