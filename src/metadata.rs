@@ -81,7 +81,7 @@ impl Metadata {
     /// if let Ok(m) = Metadata::from("Doctor.Who.(2003).S01E01.avi") {
     ///   assert_eq!(m.title(), "Doctor Who");
     ///   assert_eq!(m.season(), Some(1));
-    ///   assert_eq!(m.extension(), Some(&FileExtension::Video(VideoExtension::AVI)));
+    ///   assert_eq!(m.extension(), Some(FileExtension::Video(VideoExtension::AVI)));
     ///   assert_eq!(m.extension().unwrap().to_string(), "avi");
     ///   assert_eq!(m.extension().unwrap().is_subtitle(), false);
     ///   assert_eq!(m.extension().unwrap().is_video(), true);
@@ -155,8 +155,8 @@ impl Metadata {
     pub fn three_d(&self) -> bool {
         self.three_d
     }
-    pub fn extension(&self) -> Option<&FileExtension> {
-        self.extension.as_ref()
+    pub fn extension(&self) -> Option<FileExtension> {
+        self.extension
     }
     pub fn is_show(&self) -> bool {
         self.season.is_some()

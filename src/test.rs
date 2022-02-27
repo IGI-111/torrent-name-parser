@@ -426,7 +426,7 @@ mod extensions {
         assert_eq!(m.title(), "Life on Mars");
         assert_eq!(
             m.extension(),
-            Some(&FileExtension::Video(VideoExtension::AVI))
+            Some(FileExtension::Video(VideoExtension::AVI))
         );
     }
     #[test]
@@ -435,7 +435,7 @@ mod extensions {
         assert_eq!(m.title(), "Life on Mars");
         assert_eq!(
             m.extension(),
-            Some(&FileExtension::Video(VideoExtension::M4V))
+            Some(FileExtension::Video(VideoExtension::M4V))
         );
     }
 }
@@ -593,7 +593,7 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.srt").unwrap();
         assert_eq!(
             m.extension(),
-            Some(&FileExtension::Subtitle(SubtitleExtension::SRT))
+            Some(FileExtension::Subtitle(SubtitleExtension::SRT))
         );
     }
     #[test]
@@ -601,7 +601,7 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.ssa").unwrap();
         assert_eq!(
             m.extension(),
-            Some(&FileExtension::Subtitle(SubtitleExtension::SSA))
+            Some(FileExtension::Subtitle(SubtitleExtension::SSA))
         );
     }
     #[test]
@@ -609,7 +609,7 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.svb").unwrap();
         assert_eq!(
             m.extension(),
-            Some(&FileExtension::Subtitle(SubtitleExtension::SVB))
+            Some(FileExtension::Subtitle(SubtitleExtension::SVB))
         );
     }
     #[test]
@@ -617,7 +617,7 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.vtt").unwrap();
         assert_eq!(
             m.extension(),
-            Some(&FileExtension::Subtitle(SubtitleExtension::VTT))
+            Some(FileExtension::Subtitle(SubtitleExtension::VTT))
         );
     }
     //    #[test]

@@ -10,7 +10,7 @@ impl std::fmt::Display for ExtensionError {
         }
     }
 }
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Copy, PartialEq, Eq, Clone)]
 pub enum SubtitleExtension {
     #[doc(hidden)]
     SRT,
@@ -46,7 +46,7 @@ impl std::fmt::Display for SubtitleExtension {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Copy, PartialEq, Eq, Clone)]
 pub enum VideoExtension {
     #[doc(hidden)]
     AVI,
@@ -74,7 +74,7 @@ impl std::fmt::Display for VideoExtension {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum FileExtension {
     #[doc(hidden)]
     Subtitle(SubtitleExtension),
