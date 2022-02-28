@@ -393,6 +393,16 @@ fn names() {
     assert_eq!(m.title(), "Pokémon the Movie Black - Victini and Reshiram");
     assert_eq!(m.year(), Some(2011));
     assert_eq!(m.extension(), None);
+
+    let m =
+        Metadata::from("All.Creatures.Great.And.Small.2020.S01.AMZN.WEBRip.x264-ION10[eztv.re]")
+            .unwrap();
+    assert_eq!(m.season(), Some(1));
+    assert_eq!(m.episode(), None);
+
+    let m = Metadata::from("Midsomer Murders 1997 Season 2 Complete TVRips x264 [i_c]").unwrap();
+    assert_eq!(m.season(), Some(2));
+    assert_eq!(m.episode(), None);
 }
 
 #[cfg(test)]

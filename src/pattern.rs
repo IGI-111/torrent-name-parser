@@ -88,8 +88,9 @@ impl Pattern {
 }
 
 lazy_static! {
-    pub static ref SEASON: Pattern =
-        regex!(r"(?i)s?(?P<short>\d+) ?[ex]|(season)(?:[^\d]|$)(?P<long>\d+)|s(?P<dash>\d+) - \d+");
+    pub static ref SEASON: Pattern = regex!(
+        r"(?i)s?(?P<short>\d+) ?[ex]|(?:season)(?:[^\d]|$)(?P<long>\d+)|s(?P<dash>\d+) - \d+|\.s(?P<collection>\d){1,2}\."
+    );
     pub static ref EPISODE: Pattern = regex!(
         r"(?i)(?:e|episode)[^.\d]?(?P<short>\d{1,3})|\d+x(?P<cross>\d+)|s\d+ - (?P<dash>\d+)"
     );
