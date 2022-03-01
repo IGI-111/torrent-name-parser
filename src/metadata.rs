@@ -292,7 +292,7 @@ impl FromStr for Metadata {
             name,
             &mut title_start,
             &mut title_end,
-            |caps| caps.get(1).map(|m| m.as_str()),
+            |caps| caps.name("country").map(|m| m.as_str()),
         )
         .map(String::from);
 
