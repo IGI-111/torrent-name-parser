@@ -1,6 +1,5 @@
 pub mod extension;
 use crate::error::ErrorMatch;
-use crate::metadata::extension::FileExtension;
 use crate::pattern;
 use crate::pattern::Pattern;
 use regex::Captures;
@@ -29,7 +28,8 @@ pub struct Metadata {
     unrated: bool,
     three_d: bool,
     imdb: Option<String>,
-    extension: Option<FileExtension>,
+    extension: Option<String>,
+    is_subtitle: bool,
 }
 
 fn check_pattern_and_extract<'a>(
@@ -155,8 +155,11 @@ impl Metadata {
     pub fn three_d(&self) -> bool {
         self.three_d
     }
-    pub fn extension(&self) -> Option<FileExtension> {
-        self.extension
+    pub fn extension(&self) -> Option<&str> {
+        self.extension.as_deref()
+    }
+    pub fn ext_is_subtitle(&self) -> bool {
+        self.is_subtitle
     }
     pub fn is_show(&self) -> bool {
         self.season.is_some()
@@ -172,6 +175,7 @@ impl FromStr for Metadata {
     fn from_str(name: &str) -> Result<Self, Self::Err> {
         let mut title_start = 0;
         let mut title_end = name.len();
+        let mut is_subtitle = false;
         let mut episodes: Vec<i32> = Vec::new();
         let interim_last_episode;
 
@@ -289,6 +293,9 @@ impl FromStr for Metadata {
             |caps| caps.get(1).map(|m| m.as_str()),
         )
         .map(String::from);
+        if let Some(ext) = &extension {
+            is_subtitle = extension::set_is_subtitle(&ext);
+        }
 
         let extended = check_pattern(&pattern::EXTENDED, name, &mut title_start, &mut title_end);
         let hardcoded = check_pattern(&pattern::HARDCODED, name, &mut title_start, &mut title_end);
@@ -367,7 +374,8 @@ impl FromStr for Metadata {
             unrated: unrated.is_some(),
             three_d: three_d.is_some(),
             imdb,
-            extension: extension.map(|s| s.parse::<FileExtension>().unwrap()),
+            extension,
+            is_subtitle,
         })
     }
 }
