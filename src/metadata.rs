@@ -76,15 +76,12 @@ fn capture_to_string(caps: Option<Captures<'_>>) -> Option<String> {
 impl Metadata {
     ///```
     /// use torrent_name_parser::Metadata;
-    /// use torrent_name_parser::{FileExtension, VideoExtension};
     ///
     /// if let Ok(m) = Metadata::from("Doctor.Who.(2003).S01E01.avi") {
     ///   assert_eq!(m.title(), "Doctor Who");
     ///   assert_eq!(m.season(), Some(1));
-    ///   assert_eq!(m.extension(), Some(FileExtension::Video(VideoExtension::AVI)));
-    ///   assert_eq!(m.extension().unwrap().to_string(), "avi");
-    ///   assert_eq!(m.extension().unwrap().is_subtitle(), false);
-    ///   assert_eq!(m.extension().unwrap().is_video(), true);
+    ///   assert_eq!(m.extension(), Some("avi"));
+    ///   assert_eq!(m.ext_is_subtitle(), false);
     ///   assert_eq!(m.is_show(), true);
     ///   // Season is not 0 (zero) meaning it is not a Season Special. Eg: Christmas Special
     ///   assert_eq!(m.is_special(), false);
