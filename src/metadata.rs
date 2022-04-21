@@ -19,6 +19,7 @@ pub struct Metadata {
     codec: Option<String>,
     audio: Option<String>,
     group: Option<String>,
+    country: Option<String>,
     extended: bool,
     hardcoded: bool,
     proper: bool,
@@ -124,6 +125,9 @@ impl Metadata {
     }
     pub fn group(&self) -> Option<&str> {
         self.group.as_deref()
+    }
+    pub fn country(&self) -> Option<&str> {
+        self.country.as_deref()
     }
     pub fn imdb_tag(&self) -> Option<&str> {
         self.imdb.as_deref()
@@ -283,6 +287,14 @@ impl FromStr for Metadata {
             |caps| caps.get(1).map(|m| m.as_str()),
         )
         .map(String::from);
+        let country = check_pattern_and_extract(
+            &pattern::COUNTRY,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.name("country").map(|m| m.as_str()),
+        )
+        .map(String::from);
 
         let extended = check_pattern(&pattern::EXTENDED, name, &mut title_start, &mut title_end);
         let hardcoded = check_pattern(&pattern::HARDCODED, name, &mut title_start, &mut title_end);
@@ -310,6 +322,7 @@ impl FromStr for Metadata {
                 ("codec", codec),
                 ("audio", audio),
                 ("group", group),
+                ("country", country),
                 ("imdb", imdb),
                 ("extended", capture_to_string(extended)),
                 ("proper", capture_to_string(proper)),
@@ -353,6 +366,7 @@ impl FromStr for Metadata {
             codec,
             audio,
             group,
+            country,
             extended: extended.is_some(),
             hardcoded: hardcoded.is_some(),
             proper: proper.is_some(),

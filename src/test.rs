@@ -39,6 +39,7 @@ fn names() {
     assert_eq!(m.resolution(), Some("1080p"));
     assert_eq!(m.title(), "Euphoria");
     assert_eq!(m.extension(), None);
+    assert_eq!(m.country(), Some("US"));
 
     let m = Metadata::from("narcos.s01e10.1080p.bluray.x264-rovers").unwrap();
     assert_eq!(m.season(), Some(1));
@@ -424,12 +425,14 @@ mod extensions {
         let m = Metadata::from("Life.on.Mars.(US).S01E01.avi").unwrap();
         assert_eq!(m.title(), "Life on Mars");
         assert_eq!(m.extension(), Some("avi"));
+        assert_eq!(m.country(), Some("US"));
     }
     #[test]
     fn m4v() {
-        let m = Metadata::from("Life.on.Mars.(US).S01E01.m4v").unwrap();
+        let m = Metadata::from("Life.on.Mars.(UK).S01E01.m4v").unwrap();
         assert_eq!(m.title(), "Life on Mars");
         assert_eq!(m.extension(), Some("m4v"));
+        assert_eq!(m.country(), Some("UK"));
     }
 }
 
