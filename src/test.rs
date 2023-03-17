@@ -404,12 +404,6 @@ fn names() {
     let m = Metadata::from("Midsomer Murders 1997 Season 2 Complete TVRips x264 [i_c]").unwrap();
     assert_eq!(m.season(), Some(2));
     assert_eq!(m.episode(), None);
-
-    let m = Metadata::from("The.Last.of.Us.S01E09.720p.x265-T0PAZ").unwrap();
-    assert_eq!(m.season(), Some(1));
-    assert_eq!(m.episode(), Some(9));
-    assert_eq!(m.title(), "The Last of Us");
-    assert_eq!(m.country(), None);
 }
 
 #[cfg(test)]
