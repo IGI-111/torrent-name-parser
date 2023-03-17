@@ -2,7 +2,6 @@ use super::*;
 
 #[test]
 fn names() {
-    #[test]
     let m = Metadata::from("[ www.UsaBit.com ] - My Cousin Vinny (1992) BluRay 720p 750MB Ganool")
         .unwrap();
     assert_eq!(m.year(), Some(1992));
@@ -595,6 +594,7 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.srt").unwrap();
         assert_eq!(m.extension(), Some("srt"));
     }
+    #[test]
     fn subtitle_ssa() {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.ssa").unwrap();
         assert_eq!(m.extension(), Some("ssa"));
