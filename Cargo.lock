@@ -504,7 +504,7 @@ dependencies = [
 
 [[package]]
 name = "torrent-name-parser"
-version = "0.11.0"
+version = "0.11.1"
 dependencies = [
  "criterion",
  "criterion-macro",
