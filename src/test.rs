@@ -2,6 +2,7 @@ use super::*;
 
 #[test]
 fn names() {
+    #[test]
     let m = Metadata::from("[ www.UsaBit.com ] - My Cousin Vinny (1992) BluRay 720p 750MB Ganool")
         .unwrap();
     assert_eq!(m.year(), Some(1992));
@@ -404,6 +405,12 @@ fn names() {
     let m = Metadata::from("Midsomer Murders 1997 Season 2 Complete TVRips x264 [i_c]").unwrap();
     assert_eq!(m.season(), Some(2));
     assert_eq!(m.episode(), None);
+
+    let m = Metadata::from("The.Last.of.Us.S01E09.720p.x265-T0PAZ").unwrap();
+    assert_eq!(m.season(), Some(1));
+    assert_eq!(m.episode(), Some(9));
+    assert_eq!(m.title(), "The Last of Us");
+    assert_eq!(m.country(), None);
 }
 
 #[cfg(test)]
@@ -588,7 +595,6 @@ mod subtitle_extensions {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.srt").unwrap();
         assert_eq!(m.extension(), Some("srt"));
     }
-    #[test]
     fn subtitle_ssa() {
         let m = Metadata::from("Life.on.Mars.(US).S00E01.ssa").unwrap();
         assert_eq!(m.extension(), Some("ssa"));
