@@ -404,12 +404,6 @@ fn names() {
     let m = Metadata::from("Midsomer Murders 1997 Season 2 Complete TVRips x264 [i_c]").unwrap();
     assert_eq!(m.season(), Some(2));
     assert_eq!(m.episode(), None);
-
-    let m = Metadata::from("The.Last.of.Us.S01E09.720p.x265-T0PAZ").unwrap();
-    assert_eq!(m.season(), Some(1));
-    assert_eq!(m.episode(), Some(9));
-    assert_eq!(m.title(), "The Last of Us");
-    assert_eq!(m.country(), None);
 }
 
 #[cfg(test)]
@@ -586,6 +580,84 @@ mod multi_episodes {
         assert_eq!(m.episodes().len(), 1);
     }
 }
+
+#[cfg(test)]
+mod country {
+
+    #[cfg(test)]
+    mod the_last_of_us {
+
+        use crate::metadata::Metadata;
+
+        #[test]
+        fn the_last_of_us_as_titled() {
+            let m = Metadata::from("The.Last.of.Us.s01E01.avi").unwrap();
+            assert_eq!(m.title(), "The Last of Us");
+            assert_eq!(m.season(), Some(1));
+            assert_eq!(m.country(), None);
+        }
+        #[test]
+        fn the_last_of_us_lower() {
+            let m = Metadata::from("the.last.of.us.s01E01.avi").unwrap();
+            assert_eq!(m.title(), "the last of us");
+            assert_eq!(m.season(), Some(1));
+            assert_eq!(m.country(), None);
+        }
+        #[test]
+        fn the_last_of_us_year() {
+            let m = Metadata::from("the.last.of.us.2023.s01E01.avi").unwrap();
+            assert_eq!(m.title(), "the last of us");
+            assert_eq!(m.season(), Some(1));
+            assert_eq!(m.country(), None);
+        }
+    }
+    #[cfg(test)]
+    mod criminal_uk {
+        use crate::metadata::Metadata;
+
+        #[test]
+        fn criminal_uk() {
+            let m = Metadata::from("criminal.uk.s01E01.avi").unwrap();
+            assert_eq!(m.title(), "criminal uk");
+            assert_eq!(m.country(), None);
+        }
+
+        #[test]
+        fn criminal_uk_with_year() {
+            let m = Metadata::from("criminal.uk.2019.s01E01.avi").unwrap();
+            assert_eq!(m.title(), "criminal uk");
+            assert_eq!(m.year(), Some(2019));
+            assert_eq!(m.country(), None);
+        }
+    }
+    #[cfg(test)]
+    mod life_on_mars {
+
+        use crate::metadata::Metadata;
+        #[test]
+        fn life_on_mars_us_upper() {
+            let m = Metadata::from("Life.on.Mars.US.S01E01.avi").unwrap();
+            assert_eq!(m.title(), "Life on Mars");
+        }
+        #[test]
+        fn life_on_mars_us_lower() {
+            let m = Metadata::from("Life.on.Mars.us.S01E01.avi").unwrap();
+            assert_eq!(m.title(), "Life on Mars");
+        }
+        #[test]
+        fn life_on_mars_uk_upper() {
+            let m = Metadata::from("Life.on.Mars.UK.S01E01.avi").unwrap();
+            assert_eq!(m.title(), "Life on Mars");
+        }
+        #[test]
+        fn life_on_mars_uk_lower() {
+            let m = Metadata::from("Life.on.Mars.uk.S01E01.avi").unwrap();
+            assert_eq!(m.title(), "Life on Mars");
+        }
+    }
+}
+
+#[cfg(test)]
 mod subtitle_extensions {
     use crate::metadata::Metadata;
 
