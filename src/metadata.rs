@@ -29,6 +29,7 @@ pub struct Metadata {
     three_d: bool,
     imdb: Option<String>,
     extension: Option<String>,
+    language: Option<String>,
 }
 
 fn check_pattern_and_extract<'a>(
@@ -161,6 +162,9 @@ impl Metadata {
     }
     pub fn is_special(&self) -> bool {
         self.season.map(|s| s < 1).unwrap_or(false)
+    }
+    pub fn language(&self) -> Option<&str> {
+        self.language.as_deref()
     }
 }
 
@@ -295,6 +299,14 @@ impl FromStr for Metadata {
             |caps| caps.name("country").map(|m| m.as_str()),
         )
         .map(String::from);
+        let language = check_pattern_and_extract(
+            &pattern::LANGUAGE,
+            name,
+            &mut title_start,
+            &mut title_end,
+            |caps| caps.get(0).map(|s| s.as_str()),
+        )
+        .map(String::from);
 
         let extended = check_pattern(&pattern::EXTENDED, name, &mut title_start, &mut title_end);
         let hardcoded = check_pattern(&pattern::HARDCODED, name, &mut title_start, &mut title_end);
@@ -307,7 +319,6 @@ impl FromStr for Metadata {
 
         let region = check_pattern(&pattern::REGION, name, &mut title_start, &mut title_end);
         let container = check_pattern(&pattern::CONTAINER, name, &mut title_start, &mut title_end);
-        let language = check_pattern(&pattern::LANGUAGE, name, &mut title_start, &mut title_end);
         let garbage = check_pattern(&pattern::GARBAGE, name, &mut title_start, &mut title_end);
         let website = check_pattern(&pattern::WEBSITE, name, &mut title_start, &mut title_end);
 
@@ -324,6 +335,7 @@ impl FromStr for Metadata {
                 ("group", group),
                 ("country", country),
                 ("imdb", imdb),
+                ("language", language),
                 ("extended", capture_to_string(extended)),
                 ("proper", capture_to_string(proper)),
                 ("repack", capture_to_string(repack)),
@@ -332,7 +344,6 @@ impl FromStr for Metadata {
                 ("three_d", capture_to_string(three_d)),
                 ("region", capture_to_string(region)),
                 ("container", capture_to_string(container)),
-                ("language", capture_to_string(language)),
                 ("garbage", capture_to_string(garbage)),
                 ("website", capture_to_string(website)),
             ]));
@@ -376,6 +387,7 @@ impl FromStr for Metadata {
             three_d: three_d.is_some(),
             imdb,
             extension,
+            language,
         })
     }
 }
