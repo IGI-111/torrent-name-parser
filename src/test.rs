@@ -697,6 +697,60 @@ mod subtitle_extensions {
         assert_eq!(m.extension(), Some("dFxP"));
     }
 }
+
+#[cfg(test)]
+mod language {
+    use crate::metadata::Metadata;
+
+    #[test]
+    fn language_truefrench() {
+        let m =
+            Metadata::from("Iceberg Slim - Mama Black Widow_T3 - 2000 - FRENCH - EPUB").unwrap();
+        assert_eq!(m.language(), Some("FRENCH"));
+    }
+
+    #[test]
+    fn language_truefrench_up() {
+        let m =
+            Metadata::from("Black Widow 2021 3D Top-Bottom TRUEFRENCH 1080p BluRay x264-FrIeNdS")
+                .unwrap();
+        assert_eq!(m.language(), Some("TRUEFRENCH"));
+    }
+
+    #[test]
+    fn language_multi() {
+        let m = Metadata::from("Black Widow (2021) Multi 1080p BDRip x265 AC3").unwrap();
+        assert_eq!(m.language(), Some("Multi"));
+    }
+
+    #[test]
+    fn language_multi_up() {
+        let m = Metadata::from("Black Widow 2021 MULTi 2160p UHD Bluray HDR x265-DUSTiN").unwrap();
+        assert_eq!(m.language(), Some("MULTi"));
+    }
+
+    #[test]
+    fn language_french() {
+        let m = Metadata::from("la veuve noire (black widow) 1986 french 720p TVrip x264-dRuIdE")
+            .unwrap();
+        assert_eq!(m.language(), Some("french"));
+    }
+
+    #[test]
+    fn language_french_up() {
+        let m = Metadata::from("Avenged 2013 FRENCH COMPLETE BLURAY-USELESS").unwrap();
+        assert_eq!(m.language(), Some("FRENCH"));
+    }
+
+    #[test]
+    fn language_vff() {
+        let m =
+            Metadata::from("Les 4 filles du docteur March S01 1987 VFF 720p HDTV AVC AAC VaCa7")
+                .unwrap();
+        assert_eq!(m.language(), Some("VFF"));
+    }
+}
+
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();

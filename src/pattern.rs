@@ -117,7 +117,8 @@ lazy_static! {
     pub static ref WIDESCREEN: Pattern = regex!(r"WS");
     pub static ref THREE_D: Pattern = regex!(r"3D");
     pub static ref UNRATED: Pattern = regex!(r"UNRATED");
-    pub static ref LANGUAGE: Pattern = regex!(r"rus\.eng|US");
+    pub static ref LANGUAGE: Pattern =
+        regex!(r"\b(rus\.eng|US|MULT[Ii]|[mM]ulti|FRENCH|[fF]rench|TRUEFRENCH|VFF)\b");
     pub static ref GARBAGE: Pattern = regex!(r"1400Mb|3rd Nov|((Rip)) ");
     pub static ref IMDB: Pattern = regex!(r"tt\d{7}");
     pub static ref YEAR: Pattern = regex!(r"(?P<year>(1[89]|20)\d\d)", false, true, true);
