@@ -240,7 +240,7 @@ impl FromStr for Metadata {
             name,
             &mut title_start,
             &mut title_end,
-            |caps| caps.get(1).map(|m| m.as_str()),
+            |caps| caps.get(0).map(|m| m.as_str()),
         )
         .map(String::from);
         let quality = check_pattern_and_extract(

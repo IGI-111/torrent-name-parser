@@ -751,6 +751,49 @@ mod language {
     }
 }
 
+#[cfg(test)]
+mod resolution {
+    use crate::metadata::Metadata;
+
+    #[test]
+    fn resolution_720p() {
+        let m =
+            Metadata::from("[ www.UsaBit.com ] - My Cousin Vinny (1992) BluRay 720p 750MB Ganool")
+                .unwrap();
+        assert_eq!(m.resolution(), Some("720p"));
+    }
+
+    #[test]
+    fn resolution_2160p() {
+        let m =
+            Metadata::from("Black Widow 2021 MULTi VFF 2160p UHD Bluray HDR x265-DUSTiN").unwrap();
+        assert_eq!(m.resolution(), Some("2160p"));
+    }
+
+    #[test]
+    fn resolution_string_end() {
+        let m = Metadata::from("Black Widow 2021 FRENCH BluRay 1080p").unwrap();
+        assert_eq!(m.resolution(), Some("1080p"));
+    }
+
+    #[test]
+    fn resolution_upper_p() {
+        let m = Metadata::from(
+            "BLACK WIDOW 2021 VFF VO TRUEHD ATMOS 2160P UHD BLURAY REMUX HEVC HDR10-Obi",
+        )
+        .unwrap();
+        assert_eq!(m.resolution(), Some("2160P"));
+    }
+
+    #[test]
+    fn resolution_not_space_separated() {
+        let m =
+            Metadata::from("Kaamelott Integrale FRENCH [1080p] BDRIP HEVC-H265 10bits - Themouche")
+                .unwrap();
+        assert_eq!(m.resolution(), Some("1080p"));
+    }
+}
+
 #[test]
 fn unicode() {
     Metadata::from("éé").unwrap();
